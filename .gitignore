@@ -1,0 +1,39 @@
+.idea/
+.vscode/
+env/
+venv/
+#---------------------------------------------------------------------------
+
+analyzedcrypto/__pycache__/
+#---------------------------------------------------------------------------
+
+cltlivedata/__pycache__/
+cltlivedata/migrations/__pycache__/
+cltlivedata/tmp.py
+
+clthistoricaldata/__pycache__/
+clthistoricaldata/migrations/__pycache__/
+clthistoricaldata/tmp.py
+#---------------------------------------------------------------------------
+
+# react app
+showmystats/node_modules
+showmystats/.pnp
+showmystats/.pnp.js
+
+## testing
+showmystats/coverage
+
+# production
+showmystats/build
+
+## misc
+showmystats/.DS_Store
+showmystats/.env.local
+showmystats/.env.development.local
+showmystats/.env.test.local
+showmystats/.env.production.local
+showmystats/npm-debug.log*
+showmystats/yarn-debug.log*
+showmystats/yarn-error.log*
+#---------------------------------------------------------------------------

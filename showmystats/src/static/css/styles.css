@@ -1,0 +1,61 @@
+.headerContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #131516;
+    position: relative;
+    z-index: 1;
+}
+
+.headerImg{
+        position: relative;
+}
+
+.headerImg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/header_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.4;
+    z-index: 0;
+    border: 2px solid red;
+    box-sizing: border-box;
+}
+.radioContainer{
+    font-weight: bold;
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+    width: 100%;
+    color: #0b0c0a;
+    position: relative;
+    z-index: 1;
+}
+
+.textField{
+    margin-left: 20px !important;
+    width: 70px;
+    height: 5px;
+    align-self: flex-start;
+    position: relative;
+    z-index: 1;
+    align-items: center
+}
+
+.autoComplete{
+    display:flex;
+    justify-content: center;
+    color: #A6E22E;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+.customPadding{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
