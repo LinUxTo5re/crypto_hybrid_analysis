@@ -79,7 +79,7 @@ class fetchOHLCV:
             toTs = data['Data']['TimeFrom']  # TimeFrom for next iteration
 
             if data['Response'] == 'Success' and not data['HasWarning'] and len(data['Data']['Data']) > 0:
-                data = pd.DataFrame(data['Data']['Data'], columns = self.columns_to_keep)
+                data = pd.DataFrame(data['Data']['Data'], columns=self.columns_to_keep)
                 if all_data.empty:
                     all_data = data
                 else:

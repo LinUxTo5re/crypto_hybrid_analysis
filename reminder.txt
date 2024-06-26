@@ -1,0 +1,8 @@
+{
+    "MEDIAN": 1.73613027899388e-05,
+    "LASTTRADEID": "352927009", // +1 by previous LASTTRADEID
+    "PRICE": 1.73613027899388e-05, // aggregated price
+    "LASTUPDATE": 1719416403, // UNIX timestamp
+    "LASTVOLUME": 11959917, // base currency quantities (use as volume on showmystats)
+    "LASTVOLUMETO": 207.612199203, // quote currency (LASTVOLUME * PRICE)
+}
