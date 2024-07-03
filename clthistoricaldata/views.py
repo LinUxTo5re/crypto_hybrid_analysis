@@ -2,7 +2,19 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from rest_framework import status
+from .shortIndicators import designIndicator
 import random
+from clthistoricaldata.constants import API_KEY
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from asgiref.sync import sync_to_async
+
+
+@require_GET
+async def fetch_historical_data(request):
+    load = designIndicator(API_KEY, 'BTC', 'USDT')
+    data = await load.get_Data_Ready_For_Indicator()
+    return JsonResponse(data)
 
 
 @api_view(['GET'])

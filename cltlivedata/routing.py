@@ -1,3 +1,5 @@
 from django.urls import re_path
-
-websocket_urlpatterns = []
+from .CCCAGGconsumer import LiveDataIndexConsumer
+websocket_urlpatterns = [
+    re_path(r'ws/livetrades/(?P<market>\w+)?/?', LiveDataIndexConsumer.as_asgi()),
+]

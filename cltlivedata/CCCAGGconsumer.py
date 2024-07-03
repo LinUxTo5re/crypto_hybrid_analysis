@@ -5,8 +5,9 @@ import numpy as np
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import websockets
-from constants import CCCAGG_URL, live_bars_channel
-from filterLiveData import filterLiveData
+from .constants import CCCAGG_URL, live_bars_channel
+from .filterLiveData import filterLiveData
+
 
 class LiveDataIndexConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -18,6 +19,7 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                 "live_5mins_bar": None
             }
         )
+
     async def disconnect(self, code):
         await self.channel_layer.group_discard(live_bars_channel, self.channel_name)
 
@@ -25,7 +27,7 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
         try:
             received_data = json.loads(text_data)
             ticker = received_data.get('ticker')
-            timeframe = received_data.get('tf')
+            # timeframe = received_data.get('tf') -> default keeping 5 for now
             async with websockets.connect(CCCAGG_URL) as ws:
                 payload = {
                     "action": "SubAdd",
@@ -53,13 +55,14 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                 })
                             await self.send(text_data=json.dumps({"crypto_data": json.loads(bins_bar)}))
 
-                        if (five_minute_window_start == 0 and five_minute_window_start < current_minute) or current_minute >= five_minute_window_end:
+                        if (
+                                five_minute_window_start == 0 and five_minute_window_start < current_minute) or current_minute >= five_minute_window_end:
                             five_minute_window_start = current_minute
                             five_minute_window_end = (current_minute // 5) * 5
                             bar = {}
 
                         five_minute_key = timestamp.strftime("%Y-%m-%d %H:%M")
-                        bar = await filterLiveData.filter_dict_columns(message, bar,  five_minute_key)
+                        bar = await filterLiveData.filter_dict_columns(message, bar, five_minute_key)
 
             except Exception as e:
                 print(f"Error: {e}")

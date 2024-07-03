@@ -1,4 +1,4 @@
-from fetchOHLCV import fetchOHLCV
+from .fetchOHLCV import fetchOHLCV
 
 
 # asyncio.run(fetch_historical_data())

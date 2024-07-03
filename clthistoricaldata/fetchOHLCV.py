@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-import constants
+from .constants import OHLCV_min_api, OHLCV_daily_api, OHLCV_hour_api
 
 
 class fetchOHLCV:
@@ -32,15 +32,15 @@ class fetchOHLCV:
 
     # Fetch minute data for specified currency
     async def fetch_cryptocompare_minute_data(self, aggregate, limit, toTs=False):
-        return await self.fetch_cryptocompare_data(constants.OHLCV_min_api, aggregate, limit, toTs)
+        return await self.fetch_cryptocompare_data(OHLCV_min_api, aggregate, limit, toTs)
 
     # Fetch hourly data for specified currency
     async def fetch_cryptocompare_hour_data(self, aggregate, limit, toTs=False):
-        return await self.fetch_cryptocompare_data(constants.OHLCV_hour_api, aggregate, limit, toTs)
+        return await self.fetch_cryptocompare_data(OHLCV_hour_api, aggregate, limit, toTs)
 
     # Fetch daily data for specified currency
     async def fetch_cryptocompare_daily_data(self, aggregate, limit, toTs=False):
-        return await self.fetch_cryptocompare_data(constants.OHLCV_daily_api, aggregate, limit, toTs)
+        return await self.fetch_cryptocompare_data(OHLCV_daily_api, aggregate, limit, toTs)
 
     # format dataframe column data
     def format_time(self, x):
