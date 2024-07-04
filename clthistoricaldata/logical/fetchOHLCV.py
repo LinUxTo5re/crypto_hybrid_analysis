@@ -1,6 +1,37 @@
 import requests
 import pandas as pd
-from .constants import OHLCV_min_api, OHLCV_daily_api, OHLCV_hour_api
+from clthistoricaldata.static.constants import OHLCV_min_api, OHLCV_daily_api, OHLCV_hour_api
+
+
+# format dataframe column data
+def format_time(x):
+    return int('{:.0f}'.format(x))
+
+
+# keep specified columns
+def rename_df_columns(data):
+    data.rename(columns={'volumefrom': 'basevolume', 'volumeto': 'USDTvolume'}, inplace=True)
+    return data
+
+
+# get max volume id to get higher volumed record from dataframe
+def get_max_usdt_volume(group):
+    return group.loc[group['USDTvolume'].idxmax()]
+
+
+# find duplicate data (time) and process it
+async def process_dataframe(df):
+    values_to_match = set(df[df.duplicated('time', keep=False)]['time'])
+    filtered_data = df[df['time'].isin(values_to_match)] \
+        .groupby('time', group_keys=False) \
+        .apply(get_max_usdt_volume)
+
+    df = df[~df['time'].isin(values_to_match)]
+    df = pd.concat([df, filtered_data])
+    df.reset_index(inplace=True)
+    df.drop('index', axis=1, inplace=True)
+    df['time'] = df['time'].apply(format_time)
+    return df
 
 
 class fetchOHLCV:
@@ -10,11 +41,6 @@ class fetchOHLCV:
         self.symbol = symbol
         self.currency = currency
         self.limit = 500
-
-    # keep specified columns
-    def rename_df_columns(self, data):
-        data.rename(columns={'volumefrom': 'basevolume', 'volumeto': 'USDTvolume'}, inplace=True)
-        return data
 
     # Helper function to fetch data from CryptoCompare API
     async def fetch_cryptocompare_data(self, url, aggregate, limit, toTs=False):
@@ -42,28 +68,6 @@ class fetchOHLCV:
     async def fetch_cryptocompare_daily_data(self, aggregate, limit, toTs=False):
         return await self.fetch_cryptocompare_data(OHLCV_daily_api, aggregate, limit, toTs)
 
-    # format dataframe column data
-    def format_time(self, x):
-        return int('{:.0f}'.format(x))
-
-    # get max volume id to get higher volumed record from dataframe
-    def get_max_usdt_volume(self, group):
-        return group.loc[group['USDTvolume'].idxmax()]
-
-    # find duplicate data (time) and process it
-    async def process_dataframe(self, df):
-        values_to_match = set(df[df.duplicated('time', keep=False)]['time'])
-        filtered_data = df[df['time'].isin(values_to_match)] \
-            .groupby('time', group_keys=False) \
-            .apply(self.get_max_usdt_volume)
-
-        df = df[~df['time'].isin(values_to_match)]
-        df = pd.concat([df, filtered_data])
-        df.reset_index(inplace=True)
-        df.drop('index', axis=1, inplace=True)
-        df['time'] = df['time'].apply(self.format_time)
-        return df
-
     # fetch aggregated crypto data and concat for longer period
     async def fetch_concat_crypto_data(self, fetch_data_func, aggregate, iterations):
         toTs = False
@@ -89,6 +93,6 @@ class fetchOHLCV:
                     self.limit = 300
 
         if len(all_data) > 0:
-            all_data = self.rename_df_columns(all_data)
-            return await self.process_dataframe(all_data)
+            all_data = rename_df_columns(all_data)
+            return await process_dataframe(all_data)
         return False

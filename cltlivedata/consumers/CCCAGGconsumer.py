@@ -1,12 +1,9 @@
-import requests
-import pandas as pd
-from datetime import datetime, timedelta, timezone
-import numpy as np
+from datetime import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import websockets
-from .constants import CCCAGG_URL, live_bars_channel
-from .filterLiveData import filterLiveData
+from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel
+from cltlivedata.logical.filterLiveData import filterLiveData
 
 
 class LiveDataIndexConsumer(AsyncWebsocketConsumer):

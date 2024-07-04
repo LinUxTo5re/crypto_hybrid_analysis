@@ -1,13 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
-from rest_framework import status
-from .shortIndicators import designIndicator
+from clthistoricaldata.logical.shortIndicators import designIndicator
 import random
-from clthistoricaldata.constants import API_KEY
+from clthistoricaldata.static.constants import API_KEY
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from asgiref.sync import sync_to_async
 
 
 @require_GET
