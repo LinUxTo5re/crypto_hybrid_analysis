@@ -7,9 +7,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import '../static/css/styles.css';
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import StatisticalAnalysis from './StatisticalAnalysis';
 import TradePossibilities from './TradePossibilities';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 function AnalyticFrame({ cryptoValue }) {
   const Item = styled(Paper)(({ theme }) => ({
@@ -19,38 +21,43 @@ function AnalyticFrame({ cryptoValue }) {
     color: theme.palette.text.secondary,
   }));
 
-  const top100Films = ['a', 'b', 'c'];
+  const timeFrames = ['5m','15m','4h','1d'];
+  const tickers = ['BTC','PEPE', 'KAS','WIF','PEOPLE']
+  const [checked, setChecked] = useState(false);
 
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
+  const handleInputChange = (event) => {
+    setEnteredMarket(event.target.value.toUpperCase());
+  }
   const cryptoValueInt = parseInt(cryptoValue);
-  const [selectedMarket, setSelectedMarket] = useState(Array.from({ length: cryptoValueInt }, () => []));
+  const [selectedMarket, setSelectedMarket] = useState('');
+  const [selectedValue, setEnteredMarket] = useState('');
   const [selectedIndicators, setSelectedIndicators] = useState(Array.from({ length: cryptoValueInt }, () => []));
   const [selectedStrategies, setSelectedStrategies] = useState(Array.from({ length: cryptoValueInt }, () => []));
-  const [selectedTf, setSelectedTf] = useState(Array.from({ length: cryptoValueInt }, () => []));
+  const [selectedTf, setSelectedTf] = useState('');
   const [isValued, setIsValued] = useState(Array.from({ length: cryptoValueInt }, () => false));
 
-
-   const handleCheckboxValues = (id, value, index) => {
-         console.log("handleCheckboxValues started", value);
+   const handleAutocomplete = (id, value, index) => {
+    console.log(id,value,index)
     const updateState = (setState) => {
       setState(prevState => {
         const newState = [...prevState];
         newState[index] = value;
         return newState;
       });
-      console.log("handleCheckboxValues completed", value);
     };
 
     switch (id) {
-      case "markets":
-        updateState(setSelectedMarket);
+      case "markets":  
+          updateState(setSelectedMarket);
           setIsValued(prevState => {
-          console.log("apply btn state change started");
           const newState = [...prevState];
           newState[index] = value ? value.length > 0 : false;
-          console.log("apply btn state changed: ", value);
-          return newState;
+          return newState;        
         });
-
+      
         break;
       case "indicators":
         updateState(setSelectedIndicators);
@@ -73,7 +80,6 @@ function AnalyticFrame({ cryptoValue }) {
   };
 
   const boxArray = Array.from({ length: cryptoValueInt }, (_, index) => index);
-
   return (
     <Box sx={{ flexGrow: 1, backgroundColor: '#D3CFD1'}}>
       <Grid container spacing={2} >
@@ -82,26 +88,69 @@ function AnalyticFrame({ cryptoValue }) {
           <Grid item xs={12} key={index} sx={{border: '2px solid black'}}>
             <Item>
               <div className="autoComplete customPadding">
-                 <Autocomplete
+              
+        <FormControlLabel
+          control={
+          <Switch
+            checked={checked}
+            onChange={handleChange}
+            inputProps={{ 'aria-label': 'controlled' }}
+            color="secondary" />
+          }
+          label="custom market: "
+          labelPlacement="start"
+        />
+      
+      {!checked ? (
+        <Autocomplete
+          disablePortal
+          id={`combo-box-markets`}
+          options={tickers}
+          value={selectedMarket}
+          sx={{ width: 300, margin: '0 10px' }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Markets"
+              required
+            />
+          )}
+          onChange={(event, value) => {
+            setSelectedMarket(value);
+            handleAutocomplete('markets', value, 0);
+          }}
+        />
+      ) : (
+        <TextField
+          label="Markets"
+          value={selectedValue}
+          onChange={handleInputChange}
+          sx={{ width: 300, margin: '0 10px' }}
+          required
+        />
+      )}
+                <Autocomplete
                   disablePortal
-                  id={`combo-box-markets-${index}`}
-                  options={top100Films}
-                  value={selectedMarket[index]}
-                  sx={{ width: 300, margin: '0 10px' }}
-                  renderInput={(params) =>
+                  id={`combo-box-tf-${index}`}
+                  options={timeFrames}
+                  value={selectedTf[index]}
+                  sx={{ width: 300, margin: '0 80px 0 10px' }}
+                  renderInput={(params) => (
                     <TextField
-                      {...params}
-                      label="markets"
-                      required
-                    />}
+                    {...params}
+                    label="time-frame"
+                    />
+                  )}
                   onChange={(event, value) =>
-                   handleCheckboxValues("markets", value, index)
-                   }
+                    handleAutocomplete("tf", value, index)
+
+                  }
                 />
+
                 <Autocomplete
                   disablePortal
                   id={`combo-box-indicator-${index}`}
-                  options={top100Films}
+                  options={timeFrames}
                   value={selectedIndicators[index]}
                   sx={{ width: 300, margin: '0 10px' }}
                   renderInput={(params) => (
@@ -111,35 +160,21 @@ function AnalyticFrame({ cryptoValue }) {
                      />
                   )}
                   onChange={(event, value) =>
-                    handleCheckboxValues("indicators", value, index)
+                    handleAutocomplete("indicators", value, index)
                   }
                   multiple
                 />
                 <Autocomplete
                   disablePortal
                   id={`combo-box-strategy-${index}`}
-                  options={top100Films}
+                  options={timeFrames}
                   value={selectedStrategies[index]}
                   sx={{ width: 300, margin: '0 10px' }}
                   renderInput={(params) => (
                     <TextField {...params} label="strategies" />
                   )}
                   onChange={(event, value) =>
-                    handleCheckboxValues("strategies", value, index)
-                  }
-                  multiple
-                />
-                <Autocomplete
-                  disablePortal
-                  id={`combo-box-tf-${index}`}
-                  options={top100Films}
-                  value={selectedTf[index]}
-                  sx={{ width: 300, margin: '0 80px 0 10px' }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="time-frame" />
-                  )}
-                  onChange={(event, value) =>
-                    handleCheckboxValues("tf", value, index)
+                    handleAutocomplete("strategies", value, index)
                   }
                   multiple
                 />
