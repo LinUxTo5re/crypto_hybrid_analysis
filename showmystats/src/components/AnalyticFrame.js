@@ -6,7 +6,7 @@ import StatisticalAnalysis from './StatisticalAnalysis';
 import TradePossibilities from './TradePossibilities';
 import '../static/css/styles.css';
 import * as vj from '../constants/variables';
-import { handleAutocompleteChange} from '../utils/analyticframeUtils';
+import { handleAutocompleteChange, handleApplyButtonClick} from '../utils/analyticframeUtils';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -47,9 +47,6 @@ function AnalyticFrame({ cryptoValue }) {
     }
   };
   
-  const handleApplyButtonClick = () => {
-    console.log('Apply Button clicked');
-  };
 
   const boxArray = Array.from({ length: cryptoValueInt }, (_, index) => index);
 

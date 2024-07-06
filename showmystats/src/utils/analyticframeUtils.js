@@ -32,3 +32,7 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
     }
   };
   
+
+  export const handleApplyButtonClick = () => {
+    console.log('Apply Button clicked');
+  };
