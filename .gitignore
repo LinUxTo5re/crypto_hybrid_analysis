@@ -8,7 +8,12 @@ analyzedcrypto/__pycache__/
 #---------------------------------------------------------------------------
 
 cltlivedata/__pycache__/
+clthistoricaldata/logical/__pycache__/
+clthistoricaldata/static/__pycache__/
 cltlivedata/migrations/__pycache__/
+cltlivedata/logical/__pycache__/
+cltlivedata/static/__pycache__/
+cltlivedata/consumers/__pycache__/
 cltlivedata/tmp.py
 
 clthistoricaldata/__pycache__/

@@ -15,6 +15,7 @@ class designIndicator:
         self.currency = currency
         self.ohlcv_data_5m = self.ohlcv_data_15m = self.ohlcv_data_1h = self.ohlcv_data_4h = self.ohlcv_data_1d = []
         self.ema_outputs = {}
+        
     # Fetch historical data (5m, 15m, 1h, 4h, 1d)
     async def get_Data_Ready_For_Indicator(self):
         try:
