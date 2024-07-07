@@ -1,0 +1,9 @@
+INFO 2024-07-07 05:35:26,096 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f5a77a7bbd0>>, 5) fetched data succesfully.
+
+CRITICAL 2024-07-07 05:36:50,467 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f5a77a7bbd0>>, 15) raised error at 5 iteration. 
+ Exception: 'NoneType' object is not subscriptable) 
+
+INFO 2024-07-07 05:43:14,813 fetchOHLCV info: fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f7625d28910>>, 5)) fetched data succesfully.
+
+WARNING 2024-07-07 05:43:40,343 fetchOHLCV warning: process_dataframe(df) raised warning. 
+ Exception: 'NoneType' object has no attribute 'reset_index')
