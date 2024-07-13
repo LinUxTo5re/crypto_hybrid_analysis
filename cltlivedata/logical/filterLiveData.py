@@ -29,8 +29,16 @@ class filterLiveData:
             df.set_index('timestamp', inplace=True)
 
             # Create 5 bins for each 5-minute interval
-            bins = 5
+            unique_bins = []
+            bins = bins_length = 5
             bin_labels, bin_edges = pd.cut(df['median'], bins=bins, retbins=True, labels=False)
+
+            # Handle NaN values in bin_labels by setting them to -1
+            bin_labels = bin_labels.fillna(-1).astype(int)
+
+            # Check if bin_labels has exactly 5 unique values
+            if not len(bin_labels.unique()) == bins:
+                unique_bins = bin_labels.unique()
 
             # Find the sum of volume within each bin
             bin_volumes = defaultdict(float)
@@ -41,8 +49,22 @@ class filterLiveData:
             # Calculate the total volume
             total_volume = sum(bin_volumes.values())
 
+            unhandled_volume = bin_volumes.get('-1', 0)
+            
+            # Remove the entry with key -1 if it exists
+            if -1 in bin_volumes:
+                del bin_volumes[-1]
+                unique_bins = unique_bins[unique_bins != -1]
+                bins_length = len(unique_bins)
+                
             # Calculate the percentage of total volume for each bin
             bin_percentages = {bin_label: volume / total_volume * 100 for bin_label, volume in bin_volumes.items()}
+
+            # Find the key with the maximum value
+            max_key = max(bin_percentages, key=bin_percentages.get)
+
+            # assign if any unhandled volume to max valued key
+            bin_percentages[max_key] += unhandled_volume
 
             # Format bin percentages to 2 decimal places
             formatted_bin_percentages = {bin_label: f"{percentage:.2f}" for bin_label, percentage in
@@ -51,7 +73,7 @@ class filterLiveData:
             # Prepare data for the DataFrame
             bin_ranges = [(bin_edges[i], bin_edges[i + 1]) for i in range(len(bin_edges) - 1)]
 
-            if all(len(lst) == 5 for lst in [bin_percentages, bin_ranges, formatted_bin_percentages]):
+            if all(len(lst) == bins_length for lst in [bin_volumes, bin_ranges, formatted_bin_percentages]):
                 try:
                     data = {
                         'low_high_price': [i for i in range(1, bins + 1)],
@@ -69,7 +91,7 @@ class filterLiveData:
                 result_df = pd.DataFrame(data)
                 result_df['bin_percentage'] = result_df['bin_percentage'].astype(float)
                 result_df.sort_values(by='bin_percentage', ascending=False, inplace=True)
-                result_df['colors'] = colors
+                result_df['colors'] = colors[:bins_length]
                 result_df.sort_values(by='low_high_price', ascending=True, inplace=True)
                 result_df['bin_volume'] = result_df['bin_volume'].astype(float)
                 logger.info(
@@ -88,7 +110,7 @@ class filterLiveData:
     # find UNIX timestamp of 5 mins
     async def find_next_5_min_interval(self, timestamp):
         try:
-            dt = datetime.datetime.utcfromtimestamp(timestamp)
+            dt = datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
 
             # Calculate the number of seconds to add to reach the next 5-minute boundary
             seconds_to_next_5_min = (5 - (dt.minute % 5)) * 60 - dt.second

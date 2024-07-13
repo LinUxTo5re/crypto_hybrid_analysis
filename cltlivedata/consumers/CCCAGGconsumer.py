@@ -104,14 +104,10 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                     except websockets.exceptions.ConnectionClosedError as e:
                         logger.error(f"CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. \n Exception: {e}")
                         await asyncio.sleep(2)
-                        active_sockets = []
-                        await self.receive()
 
                     except asyncio.exceptions.IncompleteReadError as e:
                         logger.error(f"CCCAGGconsumer's receive() raised IncompleteReadError error while connecting with websocket. \n Exception: {e}")
                         await asyncio.sleep(2)
-                        active_sockets = []
-                        await self.receive()
 
                     except Exception as e:
                         logger.error(f"CCCAGGconsumer's receive() raised error while receving last tick. \n Exception: {e}")
@@ -119,15 +115,11 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
 
             except TimeoutError as terror:
                 logger.error(f"CCCAGGconsumer's receive() raised Timeout error while connecting with websocket. \n Exception: {e}")
-                await asyncio.sleep(2)
-                active_sockets = []
-                return await self.receive()
+                await asyncio.sleep(5)
 
             except Exception as e:
                 logger.error(f"CCCAGGconsumer's receive() raised error while connecting with websocket. \n Exception: {e}")
-                await asyncio.sleep(2)
-                active_sockets = []
-                return await self.receive()
+                await asyncio.sleep(5)
 
     # called after connect() to send historical data
     async def group_message(self, event):
