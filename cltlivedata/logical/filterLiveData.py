@@ -77,7 +77,7 @@ class filterLiveData:
 
                 return result_df.to_dict(orient='records')
             else:
-                logger.warning(f"filterLiveData's process_trade_data() raised warning that lenght is less than 5. "
+                logger.warning(f"filterLiveData's process_trade_data() raised warning that length is less than 5. "
                                f"check deeply it.")
                 return dict()
 

@@ -2,16 +2,15 @@ import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import websockets
-from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel, API_KEY
+from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel, API_KEY, quote_currency
 from cltlivedata.logical.filterLiveData import filterLiveData
 import logging
-from asyncio import sleep
-from asyncio.exceptions import IncompleteReadError
+import asyncio
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('cltlivedata')
+
 # globals
-active_sockets = []
 input_ticker = input_timeframe = ''
 
 
@@ -34,105 +33,105 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
         logger.info(f"Connection opened for {self.channel_name} \n")
 
     # disconnect websocket connection
-    async def disconnect(self, code):
+    async def disconnect(self, code=None):
         logger.info(f"Conncection closed for {self.channel_name} \n")
         await self.channel_layer.group_discard(live_bars_channel, self.channel_name)
 
     # fetch-process-send websocket data to endpoint
     async def receive(self, text_data=None, bytes_data=None):
-        try:
-            global active_sockets, input_ticker, input_timeframe
+        CCCAGG = CCCAGG_URL + API_KEY
+        while True:
+            try:
+                async with websockets.connect(CCCAGG) as ws:
 
-            CCCAGG = CCCAGG_URL + API_KEY
+                    payload = {
+                        "action": "SubAdd",
+                        "subs": [f"{input_timeframe}~CCCAGG~{input_ticker.upper()}~{quote_currency}"]
+                    }
+                    await ws.send(json.dumps(payload))
 
-            async with websockets.connect(CCCAGG) as ws:
-                active_sockets.append(ws)
-
-                payload = {
-                    "action": "SubAdd",
-                    "subs": [f"{input_timeframe}~CCCAGG~{input_ticker.upper()}~USDT"],
-                }
-                await ws.send(json.dumps(payload))
-
-                try:
-                    timestamp_start = timestamp_current = last_timestamp = next_5_min_timestamp = 0
-                    trade_data = []
-                    filterLiveData_helper = filterLiveData()
-
-                    async for message in ws:
-                        data = json.loads(message)
-                        last_timestamp = timestamp_current  # backup timestamp
-                        timestamp_current = data.get('LASTUPDATE', 0)
-                        logger.info(
-                            f"CCCAGGconsumer's receive() started . \n message: Fetching live tick data from {timestamp_current}\n")
-
-                        try:
-                            if data.get('TYPE') == '5':
-                                if all(key not in data for key in ('LASTMARKET', 'TOPTIERVOLUME24HOUR', 'MKTCAPPENALTY')):
-                                    if not timestamp_start:
-                                        timestamp_start = data.get('LASTUPDATE')
+                    try:
+                        timestamp_start = timestamp_current = last_timestamp = next_5_min_timestamp = 0
+                        trade_data = []
+                        filterLiveData_helper = filterLiveData()
+                        
+                        async for message in ws:
+                            data = json.loads(message)
+                            last_timestamp = timestamp_current  # backup timestamp
+                            timestamp_current = data.get('LASTUPDATE', 0)
+                            logger.info(
+                                f"CCCAGGconsumer's receive() started. \n message: Fetching live tick data from {timestamp_current}\n")
+                            
+                            try:
+                                if data.get('TYPE') == '5':
+                                    if all(key not in data for key in ('LASTMARKET', 'TOPTIERVOLUME24HOUR', 'MKTCAPPENALTY')):
                                         if not timestamp_start:
-                                            timestamp_start = int(datetime.datetime.now().timestamp())
-                                        next_5_min_timestamp = await filterLiveData_helper.find_next_5_min_interval(
-                                            timestamp_start)
-                                        print(
-                                            f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
+                                            timestamp_start = data.get('LASTUPDATE')
+                                            if not timestamp_start:
+                                                timestamp_start = int(datetime.datetime.now().timestamp())
+                                            next_5_min_timestamp = await filterLiveData_helper.find_next_5_min_interval(
+                                                timestamp_start)
+                                            print(
+                                                f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
 
-                                    if all([timestamp_current,
+                                        if all([timestamp_current,
                                             next_5_min_timestamp]) and timestamp_current > next_5_min_timestamp:
                                         # 5-min candle data fetched
-                                        candle_volume_regions = await filterLiveData_helper.process_trade_data(
-                                            trade_data=trade_data)
-                                        await self.channel_layer.group_send(
-                                            live_bars_channel,
-                                            {
-                                                "type": "group.message",
-                                                "live_5mins_bar": json.dumps(candle_volume_regions),
-                                            })
-                                        await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
+                                            candle_volume_regions = await filterLiveData_helper.process_trade_data(
+                                                trade_data=trade_data)
+                                            await self.channel_layer.group_send(
+                                                live_bars_channel,
+                                                {
+                                                    "type": "group.message",
+                                                    "live_5mins_bar": json.dumps(candle_volume_regions),
+                                                })
+                                            await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
 
-                                        trade_data = []
-                                        timestamp_start = 0
-                                        logger.info(
-                                            f"CCCAGGconsumer's receive() executed. \n message: Fetched live tick data till {timestamp_current}\n")
-                                    else:
-                                        if not timestamp_current:
-                                            data['LASTUPDATE'] = last_timestamp
-                                        trade_data.append(await filterLiveData_helper.filter_dict_columns(data))
+                                            trade_data = []
+                                            timestamp_start = 0
+                                            logger.info(
+                                                f"CCCAGGconsumer's receive() executed. \n message: Fetched live tick data till {timestamp_current}\n")
+                                        else:
+                                            if not timestamp_current:
+                                                data['LASTUPDATE'] = last_timestamp
+                                            trade_data.append(await filterLiveData_helper.filter_dict_columns(data))
+                                            print(f"{last_timestamp}: {data}")
 
-                        except Exception as e:
-                            logger.error(
-                                f"CCCAGGconsumer's receive() raised error while passing to trade_data JSON. \n "
-                                f"Exception: {e}")
-                            active_sockets = []
+                            except Exception as e:
+                                logger.error(
+                                    f"CCCAGGconsumer's receive() raised error while passing to trade_data JSON. \n "
+                                    f"Exception: {e}")
+                                active_sockets = []
+                                print(timestamp_current)
+                                await self.send(text_data=json.dumps({"test'": data}))
 
-                except websockets.exceptions.ConnectionClosedError as e:
-                    logger.error(f"CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. \n Exception: {e}")
-                    await sleep(2)
-                    active_sockets = []
-                    await self.receive()
+                    except websockets.exceptions.ConnectionClosedError as e:
+                        logger.error(f"CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. \n Exception: {e}")
+                        await asyncio.sleep(2)
+                        active_sockets = []
+                        await self.receive()
 
-                except IncompleteReadError as e:
-                    logger.error(f"CCCAGGconsumer's receive() raised IncompleteReadError error while connecting with websocket. \n Exception: {e}")
-                    await sleep(2)
-                    active_sockets = []
-                    await self.receive()
+                    except asyncio.exceptions.IncompleteReadError as e:
+                        logger.error(f"CCCAGGconsumer's receive() raised IncompleteReadError error while connecting with websocket. \n Exception: {e}")
+                        await asyncio.sleep(2)
+                        active_sockets = []
+                        await self.receive()
 
-                except Exception as e:
-                    logger.error(f"CCCAGGconsumer's receive() raised error while receving last tick. \n Exception: {e}")
+                    except Exception as e:
+                        logger.error(f"CCCAGGconsumer's receive() raised error while receving last tick. \n Exception: {e}")
 
 
-        except TimeoutError as terror:
-            logger.error(f"CCCAGGconsumer's receive() raised Timeout error while connecting with websocket. \n Exception: {e}")
-            await sleep(2)
-            active_sockets = []
-            return await self.receive()
-        
-        except Exception as e:
-            logger.error(f"CCCAGGconsumer's receive() raised error while connecting with websocket. \n Exception: {e}")
-            await sleep(2)
-            active_sockets = []
-            return await self.receive()
+            except TimeoutError as terror:
+                logger.error(f"CCCAGGconsumer's receive() raised Timeout error while connecting with websocket. \n Exception: {e}")
+                await asyncio.sleep(2)
+                active_sockets = []
+                return await self.receive()
+
+            except Exception as e:
+                logger.error(f"CCCAGGconsumer's receive() raised error while connecting with websocket. \n Exception: {e}")
+                await asyncio.sleep(2)
+                active_sockets = []
+                return await self.receive()
 
     # called after connect() to send historical data
     async def group_message(self, event):
