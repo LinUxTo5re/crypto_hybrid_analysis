@@ -66,13 +66,9 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                 if data.get('TYPE') == '5':
                                     if all(key not in data for key in ('LASTMARKET', 'TOPTIERVOLUME24HOUR', 'MKTCAPPENALTY')):
                                         if not timestamp_start:
-                                            timestamp_start = data.get('LASTUPDATE')
-                                            if not timestamp_start:
-                                                timestamp_start = int(datetime.datetime.now().timestamp())
-                                            next_5_min_timestamp = await filterLiveData_helper.find_next_5_min_interval(
-                                                timestamp_start)
-                                            print(
-                                                f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
+                                            timestamp_start = data.get('LASTUPDATE', int(datetime.datetime.now().timestamp()))
+                                            next_5_min_timestamp = await filterLiveData_helper.find_next_5_min_interval(timestamp_start)
+                                            print(f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
 
                                         if all([timestamp_current,
                                             next_5_min_timestamp]) and timestamp_current > next_5_min_timestamp:
@@ -95,7 +91,7 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                             if not timestamp_current:
                                                 data['LASTUPDATE'] = last_timestamp
                                             trade_data.append(await filterLiveData_helper.filter_dict_columns(data))
-                                            print(f"{last_timestamp}: {data}")
+                                            print(f"\n {last_timestamp}: {data}")
 
                             except Exception as e:
                                 logger.error(
