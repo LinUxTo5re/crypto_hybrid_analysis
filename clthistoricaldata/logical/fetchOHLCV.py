@@ -6,6 +6,7 @@ import logging
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('clthistoricaldata')
 
+
 # format dataframe column data
 def format_time(x):
     return int('{:.0f}'.format(x))
@@ -37,7 +38,7 @@ async def process_dataframe(df):
         df['time'] = df['time'].apply(format_time)
         return df
     except Exception as e:
-        logger.warning(f"process_dataframe(df) raised warning. \n Exception: {e})")
+        logger.warning(f"process_dataframe(df) raised warning. \n Exception: {e} \n")
         return False
 
 
@@ -64,8 +65,7 @@ class fetchOHLCV:
             response = requests.get(url, params=params)
             return response.json()
         except Exception as e:
-            logger.warning(f"fetch_cryptocompare_data() raised warning for {url}. \n Exception: {e})")
-
+            logger.warning(f"fetch_cryptocompare_data() raised warning for {url}. \n Exception: {e} \n")
 
     # Fetch minute data for specified currency
     async def fetch_cryptocompare_minute_data(self, aggregate, limit, toTs=False):
@@ -103,12 +103,16 @@ class fetchOHLCV:
 
                         if fetch_data_func == self.fetch_cryptocompare_daily_data and i == 1:
                             self.limit = 300
-                logger.info(f"fetch_concat_crypto_data({fetch_data_func, aggregate})\n message: fetched data succesfully.\n")
+                logger.info(
+                    f"fetch_concat_crypto_data({fetch_data_func, aggregate})\n message: fetched data successfully.\n")
 
             except Exception as e:
-                logger.critical(f"fetch_concat_crypto_data({fetch_data_func, aggregate}) raised error at {iterations} iteration. \n Exception: {e}) \n")
+                logger.critical(
+                    f"fetch_concat_crypto_data({fetch_data_func, aggregate}) raised error at {iterations} iteration. "
+                    f"\n Exception: {e} \n")
         except Exception as e:
-                logger.warning(f"fetch_concat_crypto_data({fetch_data_func, aggregate}) raised exception. \n Exception: {e})\n")
+            logger.warning(
+                f"fetch_concat_crypto_data({fetch_data_func, aggregate}) raised exception. \n Exception: {e} \n")
 
         if len(all_data) > 0:
             all_data = rename_df_columns(all_data)

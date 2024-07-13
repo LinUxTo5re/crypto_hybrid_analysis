@@ -142,16 +142,8 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django_debug.log'),
-            'maxBytes': 1024*1024*25,  # 25 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
         'console': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
@@ -169,11 +161,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
         'clthistoricaldata': {  # Replace 'myapp' with your app's name
             'handlers': ['file_hist', 'console'],
             'level': 'DEBUG',
