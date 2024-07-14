@@ -40,6 +40,10 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
     # fetch-process-send websocket data to endpoint
     async def receive(self, text_data=None, bytes_data=None):
         CCCAGG = CCCAGG_URL + API_KEY
+        timestamp_start = timestamp_current = last_timestamp = next_5_min_timestamp = 0
+        trade_data = []
+        filterLiveData_helper = filterLiveData()
+        
         while True:
             try:
                 async with websockets.connect(CCCAGG) as ws:
@@ -50,11 +54,7 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                     }
                     await ws.send(json.dumps(payload))
 
-                    try:
-                        timestamp_start = timestamp_current = last_timestamp = next_5_min_timestamp = 0
-                        trade_data = []
-                        filterLiveData_helper = filterLiveData()
-                        
+                    try:                        
                         async for message in ws:
                             data = json.loads(message)
                             last_timestamp = timestamp_current  # backup timestamp

@@ -33717,3 +33717,53 @@ INFO 2024-07-14 17:13:13,282 CCCAGGconsumer CCCAGGconsumer's receive() started.
 INFO 2024-07-14 17:13:14,407 CCCAGGconsumer CCCAGGconsumer's receive() started. 
  message: Fetching live tick data from 1720977191
 
+INFO 2024-07-14 17:15:42,122 CCCAGGconsumer Connection opened for specific.b4a96ef7b7304d0487dd4c8bf37d6d09!9b9803585a2946fa899a08d6738a0e81 
+
+INFO 2024-07-14 17:15:47,394 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-14 17:15:47,615 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977346
+
+INFO 2024-07-14 17:15:47,615 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-14 17:15:47,615 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-14 17:15:47,810 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977347
+
+INFO 2024-07-14 17:15:48,793 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977348
+
+INFO 2024-07-14 17:15:49,835 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977349
+
+INFO 2024-07-14 17:15:50,883 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977350
+
+INFO 2024-07-14 17:15:51,949 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977351
+
+INFO 2024-07-14 17:15:52,779 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-14 17:15:55,060 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977354
+
+INFO 2024-07-14 17:15:56,159 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977355
+
+INFO 2024-07-14 17:15:57,830 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977357
+
+INFO 2024-07-14 17:15:58,912 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977358
+
+INFO 2024-07-14 17:15:59,954 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977359
+
+INFO 2024-07-14 17:16:01,005 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1720977360
+
