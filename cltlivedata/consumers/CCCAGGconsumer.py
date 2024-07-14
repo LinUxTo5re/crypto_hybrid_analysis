@@ -43,7 +43,7 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
         timestamp_start = timestamp_current = last_timestamp = next_5_min_timestamp = 0
         trade_data = []
         filterLiveData_helper = filterLiveData()
-        
+
         while True:
             try:
                 async with websockets.connect(CCCAGG) as ws:
@@ -97,16 +97,15 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                 logger.error(
                                     f"CCCAGGconsumer's receive() raised error while passing to trade_data JSON. \n "
                                     f"Exception: {e}")
-                                active_sockets = []
                                 print(timestamp_current)
                                 await self.send(text_data=json.dumps({"test'": data}))
 
-                    except websockets.exceptions.ConnectionClosedError as e:
-                        logger.error(f"CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. \n Exception: {e}")
+                    except websockets.exceptions.ConnectionClosedError as connclosederror:
+                        logger.error(f"CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. \n Exception: {connclosederror}")
                         await asyncio.sleep(2)
 
-                    except asyncio.exceptions.IncompleteReadError as e:
-                        logger.error(f"CCCAGGconsumer's receive() raised IncompleteReadError error while connecting with websocket. \n Exception: {e}")
+                    except asyncio.exceptions.IncompleteReadError as readerror:
+                        logger.error(f"CCCAGGconsumer's receive() raised IncompleteReadError error while connecting with websocket. \n Exception: {readerror}")
                         await asyncio.sleep(2)
 
                     except Exception as e:
@@ -114,7 +113,7 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
 
 
             except TimeoutError as terror:
-                logger.error(f"CCCAGGconsumer's receive() raised Timeout error while connecting with websocket. \n Exception: {e}")
+                logger.error(f"CCCAGGconsumer's receive() raised Timeout error while connecting with websocket. \n Exception: {terror}")
                 await asyncio.sleep(5)
 
             except Exception as e:
