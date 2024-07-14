@@ -2,7 +2,7 @@ import pandas as pd
 import datetime
 from collections import defaultdict
 import logging
-from cltlivedata.static.constants import colors
+from cltlivedata.static.constants import colors, bin_keys_set
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('cltlivedata')
@@ -30,41 +30,44 @@ class filterLiveData:
 
             # Create 5 bins for each 5-minute interval
             unique_bins = []
-            bins = bins_length = 5
+            bins = 5
             bin_labels, bin_edges = pd.cut(df['median'], bins=bins, retbins=True, labels=False)
 
-            # Handle NaN values in bin_labels by setting them to -1
-            bin_labels = bin_labels.fillna(-1).astype(int)
+            # Handle NaN values in bin_labels by setting them to 5
+            # 5 - handles - nan values
+            bin_labels = bin_labels.fillna(5).astype(int)
 
             # Check if bin_labels has exactly 5 unique values
-            if not len(bin_labels.unique()) == bins:
-                unique_bins = bin_labels.unique()
+            unique_bins = bin_labels.unique()
+
+            missing_keys = bin_keys_set - set(unique_bins) # find missing key and remove bin_ranges resp.
 
             # Find the sum of volume within each bin
             bin_volumes = defaultdict(float)
-            for i, row in enumerate(df.iterrows()):
-                bin_label = bin_labels.iloc[i]
-                bin_volumes[bin_label] += row[1]['volume']
-
+            for i in range(len(unique_bins)):
+                bin_volumes[unique_bins[i]] = df[(df['median'] > bin_edges[i]) & (df['median'] < bin_edges[i+1])]['volume'].sum()
+            
             # Calculate the total volume
             total_volume = sum(bin_volumes.values())
 
-            unhandled_volume = bin_volumes.get('-1', 0)
+            unhandled_volume = bin_volumes.get('5', 0)
             
-            # Remove the entry with key -1 if it exists
-            if -1 in bin_volumes:
-                del bin_volumes[-1]
-                unique_bins = unique_bins[unique_bins != -1]
-                bins_length = len(unique_bins)
+            # Remove the entry with key 5 if it exists
+            if 5 in bin_volumes:
+                del bin_volumes[5]
+                unique_bins = unique_bins[unique_bins != 5]
                 
-            # Calculate the percentage of total volume for each bin
-            bin_percentages = {bin_label: volume / total_volume * 100 for bin_label, volume in bin_volumes.items()}
-
             # Find the key with the maximum value
-            max_key = max(bin_percentages, key=bin_percentages.get)
+            max_key = max(bin_volumes, key=bin_volumes.get)
 
             # assign if any unhandled volume to max valued key
-            bin_percentages[max_key] += unhandled_volume
+            bin_volumes[max_key] += unhandled_volume + (df['volume'].sum() - total_volume)
+            
+            # Calculate the total volume
+            total_volume = sum(bin_volumes.values())
+
+            # Calculate the percentage of total volume for each bin
+            bin_percentages = {bin_label: volume / total_volume * 100 for bin_label, volume in bin_volumes.items()}
 
             # Format bin percentages to 2 decimal places
             formatted_bin_percentages = {bin_label: f"{percentage:.2f}" for bin_label, percentage in
@@ -73,25 +76,28 @@ class filterLiveData:
             # Prepare data for the DataFrame
             bin_ranges = [(bin_edges[i], bin_edges[i + 1]) for i in range(len(bin_edges) - 1)]
 
-            if all(len(lst) == bins_length for lst in [bin_volumes, bin_ranges, formatted_bin_percentages]):
+            # Remove items from bin_ranges based on the missing keys
+            filtered_bin_ranges = [bin_ranges[i] for i in range(len(bin_ranges)) if i not in missing_keys]
+
+            if all(len(lst) == len(unique_bins) for lst in [bin_volumes, filtered_bin_ranges, formatted_bin_percentages]):
                 try:
                     data = {
-                        'low_high_price': [i for i in range(1, bins + 1)],
+                        'low_high_price': [i for i in range(1, len(unique_bins) + 1)],
                         'bin_range': bin_ranges,
-                        'bin_volume': [bin_volumes[i] for i in range(bins)],
-                        'bin_percentage': [formatted_bin_percentages[i] for i in range(bins)]
+                        'bin_volume': [bin_volumes[i] for i in range(len(unique_bins))],
+                        'bin_percentage': [formatted_bin_percentages[i] for i in range(len(unique_bins))]
                     }
                 except Exception as e:
                     logger.error(f"filterLiveData's process_trade_data(): length mismatch for give data. Lenghts are- "
                                  f"bin_volume: {len(bin_volumes)}, formatted_bin_"
                                  f"percentages: {len(formatted_bin_percentages)}, bin_ranges: {len(bin_ranges)}, "
-                                 f"bins: {len(bins)}\n Exception: {e}")
+                                 f"bins: {len(unique_bins)}\n Exception: {e}")
                     return dict()
 
                 result_df = pd.DataFrame(data)
                 result_df['bin_percentage'] = result_df['bin_percentage'].astype(float)
                 result_df.sort_values(by='bin_percentage', ascending=False, inplace=True)
-                result_df['colors'] = colors[:bins_length]
+                result_df['colors'] = colors[:len(unique_bins)]
                 result_df.sort_values(by='low_high_price', ascending=True, inplace=True)
                 result_df['bin_volume'] = result_df['bin_volume'].astype(float)
                 logger.info(
