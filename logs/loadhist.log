@@ -1,1 +1,209 @@
 tmp
+INFO 2024-07-14 17:46:45,760 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f2135653e90>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 17:46:52,770 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f2135653e90>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 17:46:56,338 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f2135653e90>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 17:47:02,606 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f2135653e90>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 17:47:07,902 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f2135653e90>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:07:52,411 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f3164df8390>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:09:09,606 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f3164df8390>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:09:27,890 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f3164df8390>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:09:48,430 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f3164df8390>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:10:03,992 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f3164df8390>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:21:57,042 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f7b91100510>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:22:02,414 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f7b91100510>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:22:05,279 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f7b91100510>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:22:09,437 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f7b91100510>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:22:18,978 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f7b91100510>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:36:00,339 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f975f921710>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:36:05,263 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f975f921710>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:36:10,535 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f975f921710>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:36:16,030 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f975f921710>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:36:18,982 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f975f921710>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:41:18,600 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cfc6fb950>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:41:25,026 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cfc6fb950>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:41:27,913 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cfc6fb950>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:41:33,477 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cfc6fb950>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:41:36,239 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cfc6fb950>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:41:57,517 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cde301750>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:42:03,957 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cde301750>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:42:06,938 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cde301750>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:42:12,959 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cde301750>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:42:16,326 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f1cde301750>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:55:11,807 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fcba9d0af10>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:55:41,676 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7ff59790d8d0>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:55:49,115 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7ff59790d8d0>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:55:55,092 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7ff59790d8d0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:56:01,784 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7ff59790d8d0>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:56:10,337 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7ff59790d8d0>>, 1))
+ message: fetched data successfully.
+
+WARNING 2024-07-14 18:56:48,634 shortIndicators get_Data_Ready_For_Indicator() raised warning. 
+ Exception: tuple indices must be integers or slices, not str
+INFO 2024-07-14 18:57:11,180 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fcf639e3550>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:57:21,627 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fcf639e3550>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:57:24,530 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fcf639e3550>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:57:29,406 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fcf639e3550>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 18:57:32,727 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fcf639e3550>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:01:48,648 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f772e359350>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:01:59,829 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f772e359350>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:02:03,304 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f772e359350>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:02:08,307 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f772e359350>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:02:12,506 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f772e359350>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:04:02,651 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fb99c5ff6d0>>, 5))
+ message: fetched data successfully.
+
+WARNING 2024-07-14 19:06:00,109 fetchOHLCV fetch_cryptocompare_data() raised warning for https://min-api.cryptocompare.com/data/v2/histominute. 
+ Exception: Expecting value: line 1 column 1 (char 0) 
+
+CRITICAL 2024-07-14 19:06:01,276 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fb99c5ff6d0>>, 15)) raised error at 5 iteration. 
+ Exception: 'NoneType' object is not subscriptable 
+
+INFO 2024-07-14 19:06:04,615 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fb99c5ff6d0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:06:10,393 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fb99c5ff6d0>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:06:15,624 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fb99c5ff6d0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:07:55,985 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f6f89f0afd0>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:08:05,107 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f6f89f0afd0>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:08:09,087 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f6f89f0afd0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:08:14,937 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f6f89f0afd0>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:08:21,117 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f6f89f0afd0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:09:45,656 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f9cc4a8f150>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:09:52,067 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f9cc4a8f150>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:09:55,421 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f9cc4a8f150>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:10:02,466 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f9cc4a8f150>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:10:06,520 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f9cc4a8f150>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:12:08,484 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7ff9b61518d0>>, 5))
+ message: fetched data successfully.
+
+WARNING 2024-07-14 19:12:23,672 shortIndicators get_Data_Ready_For_Indicator() raised warning. 
+ Exception: list indices must be integers or slices, not str
+INFO 2024-07-14 19:13:12,838 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f86494ff790>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:13:17,965 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f86494ff790>>, 15))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:13:22,131 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f86494ff790>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:13:27,879 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f86494ff790>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-14 19:13:31,056 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_daily_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f86494ff790>>, 1))
+ message: fetched data successfully.
+

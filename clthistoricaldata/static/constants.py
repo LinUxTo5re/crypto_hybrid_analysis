@@ -1,5 +1,5 @@
 # API_KEY
-API_KEY = '8f04825502268f13d65677a06b5e88a216b6995bbd63d843638f3eba33c648dc'
+API_KEY = '85a8da1ac80aa8567c66e36edf6f63d9cc79ba55d0fdf45f31e0a9e9d1fa4de9'
 
 # Historical minute data api
 OHLCV_min_api = 'https://min-api.cryptocompare.com/data/v2/histominute'
@@ -10,4 +10,4 @@ OHLCV_hour_api = 'https://min-api.cryptocompare.com/data/v2/histohour'
 # Historical daily data api
 OHLCV_daily_api = 'https://min-api.cryptocompare.com/data/v2/histoday'
 
-
+quote_currency = 'USDT'
