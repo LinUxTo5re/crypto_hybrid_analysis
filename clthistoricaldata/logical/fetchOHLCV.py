@@ -2,25 +2,10 @@ import requests
 import pandas as pd
 from clthistoricaldata.static.constants import OHLCV_min_api, OHLCV_daily_api, OHLCV_hour_api
 import logging
+import clthistoricaldata.helpers.datahelper as helper
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('clthistoricaldata')
-
-
-# format dataframe column data
-def format_time(x):
-    return int('{:.0f}'.format(x))
-
-
-# keep specified columns
-def rename_df_columns(data):
-    data.rename(columns={'volumefrom': 'basevolume', 'volumeto': 'USDTvolume'}, inplace=True)
-    return data
-
-
-# get max volume id to get higher volumed record from dataframe
-def get_max_usdt_volume(group):
-    return group.loc[group['USDTvolume'].idxmax()]
 
 
 # find duplicate data (time) and process it
@@ -29,13 +14,14 @@ async def process_dataframe(df):
         values_to_match = set(df[df.duplicated('time', keep=False)]['time'])
         filtered_data = df[df['time'].isin(values_to_match)] \
             .groupby('time', group_keys=False) \
-            .apply(get_max_usdt_volume)
+            .apply(helper.get_max_usdt_volume)
 
         df = df[~df['time'].isin(values_to_match)]
         df = pd.concat([df, filtered_data])
         df.reset_index(inplace=True)
         df.drop('index', axis=1, inplace=True)
-        df['time'] = df['time'].apply(format_time)
+        df['time'] = df['time'].apply(helper.format_time)
+        df.sort_values(by='time', ascending=True, inplace=True)
         return df
     except Exception as e:
         logger.warning(f"process_dataframe(df) raised warning. \n Exception: {e} \n")
@@ -115,6 +101,6 @@ class fetchOHLCV:
                 f"fetch_concat_crypto_data({fetch_data_func, aggregate}) raised exception. \n Exception: {e} \n")
 
         if len(all_data) > 0:
-            all_data = rename_df_columns(all_data)
+            all_data = helper.rename_df_columns(all_data)
             return await process_dataframe(all_data)
         return False

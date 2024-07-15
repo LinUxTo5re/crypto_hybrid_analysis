@@ -11,3 +11,4 @@ OHLCV_hour_api = 'https://min-api.cryptocompare.com/data/v2/histohour'
 OHLCV_daily_api = 'https://min-api.cryptocompare.com/data/v2/histoday'
 
 quote_currency = 'USDT'
+indicators_tf = ['5m','15m','4h','1d', '1h']

@@ -1,20 +1,42 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from clthistoricaldata.logical.shortIndicators import designIndicator
+from clthistoricaldata.logical.fetchTimeframes import designTimeframes
 import random
 from clthistoricaldata.static.constants import API_KEY
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from clthistoricaldata.static.constants import quote_currency
+from clthistoricaldata.static.constants import quote_currency, indicators_tf
+from clthistoricaldata.logical.mlhistdata import designMLmodel
+from clthistoricaldata.logical.shortIndicators import designIndicator
+import logging
 
+# Get an instance of a logger for the 'clthistoricaldata' app
+logger = logging.getLogger('clthistoricaldata')
 
 @require_GET
 async def fetch_historical_data(request):
     market = request.GET.get('market', 'BTC')
-    load = designIndicator(API_KEY, market, quote_currency)
-    data = await load.get_Data_Ready_For_Indicator()
-    # data = {"message" : "hello buddy"}
-    json_data = data.to_dict(orient='records')
+    timeframe = request.GET.get('tf', '5m')
+    isML = request.GET.get('isml', 'false').lower() == 'true'
+
+    if not timeframe in indicators_tf:
+        return JsonResponse({"message": "provide correct time frame", "timeframes": indicators_tf}, safe=False)
+    
+    load = designTimeframes(API_KEY, market.upper(), quote_currency, timeframe, isML)
+    data = await load.get_Data_Ready_For_Indicator_ml()
+
+    if isML:
+        mlmodel = designMLmodel()
+        ohlcv_data = await mlmodel.ML_Indication(data)
+    else:
+        designIndicators = designIndicator()
+        ohlcv_data = await designIndicators.EMA_Indication(data)
+        
+    # data = {"message" : "hello buddy"} # sample, remove later
+    json_data = ohlcv_data.to_dict(orient='records')
+    if not json_data:
+        json_data = {"message" : "No data avaialbe, something went wrong."}
+        logger.warning("NO DATA AVAILABLE, DEBUG AND CHECK CODE")
     return JsonResponse(json_data, safe=False)
 
 
