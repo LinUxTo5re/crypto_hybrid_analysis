@@ -375,3 +375,23 @@ INFO 2024-07-15 14:29:57,883 fetchOHLCV fetch_concat_crypto_data((<bound method 
 
 INFO 2024-07-15 14:29:57,906 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
  message: indicator created successfully. 
+INFO 2024-07-15 16:18:10,112 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f2cae3a72d0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-15 16:18:10,135 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
+ message: indicator created successfully. 
+INFO 2024-07-15 16:18:46,770 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f3e4f70c3d0>>, 1))
+ message: fetched data successfully.
+
+INFO 2024-07-15 16:18:46,793 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
+ message: indicator created successfully. 
+INFO 2024-07-15 16:28:44,257 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f99ac7ebdd0>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-15 16:28:44,285 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
+ message: indicator created successfully. 
+INFO 2024-07-15 16:32:44,415 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_minute_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7f99abd3c810>>, 5))
+ message: fetched data successfully.
+
+INFO 2024-07-15 16:32:44,438 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
+ message: indicator created successfully. 

@@ -29,8 +29,8 @@ async def fetch_historical_data(request):
         mlmodel = designMLmodel()
         ohlcv_data = await mlmodel.ML_Indication(data)
     else:
-        designIndicators = designIndicator()
-        ohlcv_data = await designIndicators.EMA_Indication(data)
+        designIndicators = designIndicator(data, timeframe)
+        ohlcv_data = await designIndicators.Indicators_Indication()
         
     # data = {"message" : "hello buddy"} # sample, remove later
     json_data = ohlcv_data.to_dict(orient='records')

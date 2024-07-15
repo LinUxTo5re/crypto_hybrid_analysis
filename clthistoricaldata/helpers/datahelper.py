@@ -18,6 +18,9 @@ def get_max_usdt_volume(group):
     return group.loc[group['USDTvolume'].idxmax()]
 
 # return EMA indicator value only for dataframe
-async def filter_ema_indicator_data(ohlcv_data):
+async def filter_ema_indicator_data(ohlcv_data, is5min):
+    if is5min:
+        return ohlcv_data[['time', 'EMA_9','EMA_12','EMA_50','basevolume']]
+    
     return ohlcv_data[['time', 'EMA_9','EMA_12','EMA_50']]
     
