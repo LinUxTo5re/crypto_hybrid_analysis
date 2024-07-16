@@ -2,7 +2,7 @@ import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import websockets
-from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel, API_KEY, quote_currency
+from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel, API_KEY, quote_currency, append_data_channel
 from cltlivedata.logical.filterLiveData import filterLiveData
 import cltlivedata.logical.datahelper as helper
 import logging
@@ -24,19 +24,11 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
         await self.accept()
         input_ticker = self.scope['path'].split('/')[-1]
         input_timeframe = 5  # default
-        await self.channel_layer.group_send(
-            live_bars_channel,
-            {
-                "type": "group.message",
-                "live_5mins_bar": None
-            }
-        )
         logger.info(f"Connection opened for {self.channel_name} \n")
 
     # disconnect websocket connection
     async def disconnect(self, code=None):
         logger.info(f"Conncection closed for {self.channel_name} \n")
-        await self.channel_layer.group_discard(live_bars_channel, self.channel_name)
 
     # fetch-process-send websocket data to endpoint
     async def receive(self, text_data=None, bytes_data=None):
@@ -76,14 +68,18 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                         # 5-min candle data fetched
                                             candle_volume_regions = await filterLiveData_helper.process_trade_data(
                                                 trade_data=trade_data)
-                                            await self.channel_layer.group_send(
-                                                live_bars_channel,
-                                                {
-                                                    "type": "group.message",
-                                                    "live_5mins_bar": json.dumps(candle_volume_regions),
-                                                })
+                                            
                                             await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
-
+                                            
+                                            await self.channel_layer.group_send(
+                                                    append_data_channel,
+                                                    {
+                                                        'type': 'append_data',
+                                                        'is5minscandle': True,
+                                                        'timestamp_current': next_5_min_timestamp
+                                                    }
+                                                ) # notify appendINDconsumer to append data
+                                            
                                             trade_data = []
                                             timestamp_start = 0
                                             print(next_5_min_timestamp)
@@ -118,12 +114,3 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
             except Exception as e:
                 logger.error(f"CCCAGGconsumer's receive() raised error while connecting with websocket. \n Exception: {e}")
                 await asyncio.sleep(5)
-
-    # called after connect() to send historical data
-    async def group_message(self, event):
-        live_5mins_bar = event.get('live_5mins_bar')
-
-        if live_5mins_bar is None:
-            live_5mins_bar = ''
-
-        await self.send(text_data=json.dumps({"live_5mins_bar": live_5mins_bar}))

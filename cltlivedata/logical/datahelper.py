@@ -4,7 +4,7 @@ import logging
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('cltlivedata')
 # find UNIX timestamp for timeframes
-async def find_next_interval(self, timestamp, timeframe):
+async def find_next_interval(timestamp, timeframe):
     try:
         dt = datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
             
