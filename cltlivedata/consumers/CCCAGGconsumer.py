@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import websockets
 from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel, API_KEY, quote_currency
 from cltlivedata.logical.filterLiveData import filterLiveData
+import cltlivedata.logical.datahelper as helper
 import logging
 import asyncio
 
@@ -67,8 +68,8 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                     if all(key not in data for key in ('LASTMARKET', 'TOPTIERVOLUME24HOUR', 'MKTCAPPENALTY')):
                                         if not timestamp_start:
                                             timestamp_start = data.get('LASTUPDATE', int(datetime.datetime.now().timestamp()))
-                                            next_5_min_timestamp = await filterLiveData_helper.find_next_5_min_interval(timestamp_start)
-                                            print(f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
+                                            next_5_min_timestamp = await helper.find_next_interval(timestamp=timestamp_start, timeframe='5m')
+                                            # print(f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
 
                                         if all([timestamp_current,
                                             next_5_min_timestamp]) and timestamp_current > next_5_min_timestamp:
@@ -85,20 +86,18 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
 
                                             trade_data = []
                                             timestamp_start = 0
+                                            print(next_5_min_timestamp)
                                             logger.info(
                                                 f"CCCAGGconsumer's receive() executed. \n message: Fetched live tick data till {timestamp_current}\n")
                                         else:
                                             if not timestamp_current:
                                                 data['LASTUPDATE'] = last_timestamp
                                             trade_data.append(await filterLiveData_helper.filter_dict_columns(data))
-                                            print(f"\n {last_timestamp}: {data}")
 
                             except Exception as e:
                                 logger.error(
                                     f"CCCAGGconsumer's receive() raised error while passing to trade_data JSON. \n "
                                     f"Exception: {e}")
-                                print(timestamp_current)
-                                await self.send(text_data=json.dumps({"test'": data}))
 
                     except websockets.exceptions.ConnectionClosedError as connclosederror:
                         logger.error(f"CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. \n Exception: {connclosederror}")

@@ -395,3 +395,8 @@ INFO 2024-07-15 16:32:44,415 fetchOHLCV fetch_concat_crypto_data((<bound method 
 
 INFO 2024-07-15 16:32:44,438 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
  message: indicator created successfully. 
+INFO 2024-07-16 15:55:58,069 fetchOHLCV fetch_concat_crypto_data((<bound method fetchOHLCV.fetch_cryptocompare_hour_data of <clthistoricaldata.logical.fetchOHLCV.fetchOHLCV object at 0x7fe6fb5fd3d0>>, 4))
+ message: fetched data successfully.
+
+INFO 2024-07-16 15:55:58,106 fetchTimeframes get_Data_Ready_For_Indicator() executed successfully. 
+ message: indicator created successfully. 

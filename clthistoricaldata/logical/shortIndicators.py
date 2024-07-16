@@ -1,5 +1,5 @@
 import talib
-from clthistoricaldata.helpers.datahelper import calculate_ema, filter_ema_indicator_data
+from clthistoricaldata.helpers.datahelper import filter_ema_indicator_data
 
 class designIndicator:
 

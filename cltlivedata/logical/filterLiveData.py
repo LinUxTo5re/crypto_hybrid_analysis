@@ -1,5 +1,4 @@
 import pandas as pd
-import datetime
 from collections import defaultdict
 import logging
 from cltlivedata.static.constants import colors, bin_keys_set
@@ -113,22 +112,4 @@ class filterLiveData:
             logger.error(f"filterLiveData's process_trade_data() raised error. \n Exception: {e}")
             return dict()
 
-    # find UNIX timestamp of 5 mins
-    async def find_next_5_min_interval(self, timestamp):
-        try:
-            dt = datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
-
-            # Calculate the number of seconds to add to reach the next 5-minute boundary
-            seconds_to_next_5_min = (5 - (dt.minute % 5)) * 60 - dt.second
-
-            # Calculate the next 5-minute interval datetime
-            next_5_min_dt = dt + datetime.timedelta(seconds=seconds_to_next_5_min)
-
-            # Convert the datetime back to a UNIX timestamp
-            next_5_min_timestamp = int(next_5_min_dt.timestamp())
-
-            return next_5_min_timestamp
-        except Exception as e:
-            logger.warning(
-                f"filterLiveData's find_next_5_min_interval({timestamp}) raised warning. \n Exception: {e}\n")
-            return int(datetime.datetime.now().timestamp())
+    
