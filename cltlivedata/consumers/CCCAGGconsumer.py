@@ -60,9 +60,9 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                     if all(key not in data for key in ('LASTMARKET', 'TOPTIERVOLUME24HOUR', 'MKTCAPPENALTY')):
                                         if not timestamp_start:
                                             timestamp_start = data.get('LASTUPDATE', int(datetime.datetime.now().timestamp()))
-                                            next_5_min_timestamp = await helper.find_next_interval(timestamp=timestamp_start, timeframe='5m')
+                                            next_5_min_timestamp = await helper.find_or_check_interval(timestamp=timestamp_start, timeframe='5m')
                                             # print(f"start: {datetime.datetime.fromtimestamp(timestamp_start, tz=datetime.timezone.utc)} next_5: {datetime.datetime.utcfromtimestamp(next_5_min_timestamp)}")
-
+                                            
                                         if all([timestamp_current,
                                             next_5_min_timestamp]) and timestamp_current > next_5_min_timestamp:
                                         # 5-min candle data fetched
@@ -70,25 +70,25 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                                 trade_data=trade_data)
                                             
                                             await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
-                                            
+
                                             await self.channel_layer.group_send(
                                                     append_data_channel,
                                                     {
                                                         'type': 'append_data',
-                                                        'is5minscandle': True,
+                                                        'ticker': input_ticker.upper(),
                                                         'timestamp_current': next_5_min_timestamp
                                                     }
                                                 ) # notify appendINDconsumer to append data
                                             
                                             trade_data = []
                                             timestamp_start = 0
-                                            print(next_5_min_timestamp)
                                             logger.info(
                                                 f"CCCAGGconsumer's receive() executed. \n message: Fetched live tick data till {timestamp_current}\n")
                                         else:
                                             if not timestamp_current:
                                                 data['LASTUPDATE'] = last_timestamp
                                             trade_data.append(await filterLiveData_helper.filter_dict_columns(data))
+                                            print(f"\n {data}") # remove code
 
                             except Exception as e:
                                 logger.error(

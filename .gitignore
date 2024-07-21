@@ -20,6 +20,8 @@ clthistoricaldata/__pycache__/
 clthistoricaldata/migrations/__pycache__/
 clthistoricaldata/tmp.py
 clthistoricaldata/helpers/__pycache__/
+common/__pycache__/
+tmp_credentials.py
 #---------------------------------------------------------------------------
 
 # react app

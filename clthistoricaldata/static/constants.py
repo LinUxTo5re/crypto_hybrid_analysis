@@ -12,3 +12,9 @@ OHLCV_daily_api = 'https://min-api.cryptocompare.com/data/v2/histoday'
 
 quote_currency = 'USDT'
 indicators_tf = ['5m','15m','4h','1d', '1h']
+
+url_mapping = {
+    'm': OHLCV_min_api,
+    'h': OHLCV_hour_api,
+    'd': OHLCV_daily_api
+}
