@@ -120,7 +120,8 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
                                 'ema_9': ema_data.get('9'),
                                 'ema_12': ema_data.get('12'),
                                 'ema_50': ema_data.get('50'),
-                                'timestamp': ohlcv_data.get('time')
+                                'timestamp': ohlcv_data.get('time'),
+                                'ticker' : self.input_ticker
                             }
 
                         # we use UTC timestamp, so don't be confuse if you get 1h data when indian time is 14:30, cuz' at that time UTC will be 09:00
@@ -154,6 +155,7 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
                 ohlcv_data = response_data_dict[self.timestamp_current]
                 self.indicator_return_dict_volume['baseVolume'] = ohlcv_data.get('volumefrom', 0)
             self.indicator_return_dict_volume['timestamp'] = ohlcv_data.get('time', self.indicator_return_dict.get('timestamp', 0))
+            self.indicator_return_dict_volume['ticker'] = self.input_ticker
 
         except Exception as e:
             logger.error(

@@ -1,1 +1,110 @@
 hello team
+INFO 2024-07-23 13:37:40,054 CCCAGGconsumer Connection opened for specific.354ba2e8c71f44b7aebc239e4be38ef9!e4f3ba76674141fc89e0e1310033c1b7 
+
+ERROR 2024-07-23 13:37:46,124 CCCAGGconsumer CCCAGGconsumer's receive() raised error while connecting with websocket. 
+ Exception: [Errno 101] Connect call failed ('20.71.85.67', 443)
+INFO 2024-07-23 13:37:51,909 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:37:52,078 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741871
+
+INFO 2024-07-23 13:37:52,078 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:37:52,078 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:37:52,714 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741872
+
+INFO 2024-07-23 13:37:53,720 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741873
+
+INFO 2024-07-23 13:37:54,776 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741874
+
+INFO 2024-07-23 13:37:55,728 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741875
+
+INFO 2024-07-23 13:37:56,730 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741876
+
+INFO 2024-07-23 13:37:57,740 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741877
+
+INFO 2024-07-23 13:38:02,605 CCCAGGconsumer Connection opened for specific.88f6b92f91c04e7d8acc33e7fdc4161f!6e02604f818746139574db8799da5c28 
+
+INFO 2024-07-23 13:38:04,382 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:38:04,541 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741883
+
+INFO 2024-07-23 13:38:04,541 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:38:04,541 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:38:04,754 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741884
+
+INFO 2024-07-23 13:38:05,946 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741885
+
+INFO 2024-07-23 13:38:06,766 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741886
+
+INFO 2024-07-23 13:38:07,773 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741887
+
+INFO 2024-07-23 13:38:08,778 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741888
+
+INFO 2024-07-23 13:38:09,837 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741889
+
+INFO 2024-07-23 13:38:10,861 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741890
+
+INFO 2024-07-23 13:38:11,792 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741891
+
+INFO 2024-07-23 13:38:12,909 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741892
+
+INFO 2024-07-23 13:38:13,796 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741893
+
+INFO 2024-07-23 13:38:14,807 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741894
+
+INFO 2024-07-23 13:38:15,237 appendINDconsumer AppendIndicatorsValuesConsumer's receive() started. 
+ message: appending indicators data
+
+INFO 2024-07-23 13:38:15,805 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741895
+
+INFO 2024-07-23 13:38:16,808 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741896
+
+INFO 2024-07-23 13:38:17,813 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741897
+
+INFO 2024-07-23 13:38:18,015 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 0
+
+INFO 2024-07-23 13:38:18,811 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741898
+
+INFO 2024-07-23 13:38:20,221 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741899
+
+INFO 2024-07-23 13:38:26,829 CCCAGGconsumer CCCAGGconsumer's receive() started. 
+ message: Fetching live tick data from 1721741900
+
+ERROR 2024-07-23 13:39:04,212 CCCAGGconsumer CCCAGGconsumer's receive() raised ConnectionClosedError error while connecting with websocket. 
+ Exception: sent 1011 (internal error) keepalive ping timeout; no close frame received
+ERROR 2024-07-23 13:39:16,216 CCCAGGconsumer CCCAGGconsumer's receive() raised Timeout error while connecting with websocket. 
+ Exception: 
