@@ -1,7 +1,5 @@
-import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-import websockets
 from cltlivedata.static.constants import append_data_channel, API_KEY, quote_currency
 from cltlivedata.logical.filterLiveData import filterLiveData
 import cltlivedata.logical.datahelper as helper
@@ -10,7 +8,6 @@ import asyncio
 from clthistoricaldata.logical.fetchOHLCV import fetchOHLCV as ohlcvdata
 from clthistoricaldata.static.constants import url_mapping
 from common.appendIndicatorsWithLive import calculate_ema
-from time import sleep
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('cltlivedata')
@@ -64,61 +61,27 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
 
     # append data on group_channel notify by CCCAGGconsumer.py
     async def append_data(self, event):
-        input_ticker = event.get('ticker')
-        timestamp_current = event.get('timestamp_current') # it's next_5_min_timestamp
-        indicator_return_dict = dict()
-        getOHLCV = ohlcvdata(API_KEY=API_KEY, columns_to_keep=[], symbol=input_ticker, currency=quote_currency)
+        self.input_ticker = event.get('ticker')
+        self.timestamp_current = event.get('timestamp_current') # it's next_5_min_timestamp
+        self.indicator_return_dict = dict()
+        self.getOHLCV = ohlcvdata(API_KEY=API_KEY, columns_to_keep=[], symbol=self.input_ticker, currency=quote_currency)
 
         try:
             logger.info(
-                f"AppendIndicatorsValuesConsumer's append_data() started. \n message: appending indicators data at {timestamp_current}\n")
+                f"AppendIndicatorsValuesConsumer's append_data() started. \n message: appending indicators data at {self.timestamp_current}\n")
                 # next_timestamp = await helper.find_next_interval(timestamp=timestamp_current, timeframe=tf)
-            valid_tf_to_append_data = [
+            self.valid_tf_to_append_data = [
              tf for tf in ['5m', '15m', '1h', '4h', '1d'] 
-                 if await helper.find_or_check_interval(timestamp=timestamp_current, timeframe=tf, isCheck=True)
+                 if await helper.find_or_check_interval(timestamp=self.timestamp_current, timeframe=tf, isCheck=True)
             ]
-            for tf in valid_tf_to_append_data:
-                time_digit = int(''.join(filter(str.isdigit, tf)))
-                time_char = ''.join(filter(str.isalpha, tf))
-                    
-                try:
-                    url = url_mapping.get(time_char)
-                    response = await getOHLCV.fetch_cryptocompare_data(url=url, aggregate=time_digit, limit =5)
-                    response_data_dict = {data['time']: data for data in response.get('Data', {}).get('Data', [])}
-
-                    if timestamp_current in response_data_dict.keys():
-                        ohlcv_data = response_data_dict[timestamp_current]
-                        ema_data = dict()
-
-                        for ema_period, last_ema_data in [(9,self.previous_EMA_9_data), (12, self.previous_EMA_12_data), (50,self.previous_EMA_50_data)]:
-                            weighted_close_price = (ohlcv_data['high'] + ohlcv_data['low'] + 2 * ohlcv_data['close']) / 4
-                            new_ema = await calculate_ema(previous_ema=last_ema_data, new_price=weighted_close_price, ema_period=ema_period)
-                            ema_data[str(ema_period)] = new_ema
-                                
-                        indicator_return_dict[tf] = {
-                            'ema_9': ema_data.get('9'),
-                            'ema_12': ema_data.get('12'),
-                            'ema_50': ema_data.get('50'),
-                            'timestamp': ohlcv_data.get('time')
-                        }
-
-                        # we use UTC timestamp, so don't be confuse if you get 1h data when indian time is 14:30, cuz' at that time UTC will be 09:00
-                        if tf == '5m': # return baseVolume for 5 minutes candle
-                            indicator_return_dict[tf]['baseVolume'] = ohlcv_data.get('volumefrom', 0)
-                            if indicator_return_dict[tf]['baseVolume'] == 0:
-                                while not indicator_return_dict[tf]['baseVolume'] == 0: #  handle it properly, can't block other tf's call
-                                    sleep(10) # awaiting for 10 seconds
-                                    response = await getOHLCV.fetch_cryptocompare_data(url=url, aggregate=5, limit =3)
-                                    response_data_dict = {data['time']: data for data in response.get('Data', {}).get('Data', [])}
-                                    ohlcv_data = response_data_dict[timestamp_current]
-                                    indicator_return_dict[tf]['baseVolume'] = ohlcv_data.get('volumefrom', 0)
-                    
-                except Exception as e:
-                    logger.error(
-                        f"AppendIndicatorsValuesConsumer's append_data() raised error while appending data. \n "
-                        f"Exception: {e}")
-
-                                            
+            # Start processing EMA data and volume data concurrently
+            ema_task = asyncio.create_task(self.process_and_send_ema_data())
+            volume_task = asyncio.create_task(self.process_and_send_volume_data())
+                
+                # Await both tasks to ensure they complete
+            await ema_task
+            await volume_task
+           
         except Exception as e:
             logger.error(
                 f"AppendIndicatorsValuesConsumer's append_data() raised error while appending data. \n "
@@ -127,10 +90,78 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
         else: # execute if try executed without raising exception
             logger.info(
                 f"AppendIndicatorsValuesConsumer's append_data() executed successfully.\n")
-            await self.send(json.dumps(indicator_return_dict))
 
         finally: # execute anyway after try-except
             logger.info(
                 f"AppendIndicatorsValuesConsumer's append_data() executed.\n")
+            
+    # append new ema to data (timeframes- 5m, 15m, 1h, 4h, 1d)
+    async def process_and_send_ema_data(self):
+        try:
+            for tf in self.valid_tf_to_append_data:
+                    time_digit = int(''.join(filter(str.isdigit, tf)))
+                    time_char = ''.join(filter(str.isalpha, tf))
+                        
+                    try:
+                        url = url_mapping.get(time_char)
+                        response = await self.getOHLCV.fetch_cryptocompare_data(url=url, aggregate=time_digit, limit =5)
+                        response_data_dict = {data['time']: data for data in response.get('Data', {}).get('Data', [])}
 
-    
+                        if self.timestamp_current in response_data_dict.keys():
+                            ohlcv_data = response_data_dict[self.timestamp_current]
+                            ema_data = dict()
+
+                            for ema_period, last_ema_data in [(9,self.previous_EMA_9_data), (12, self.previous_EMA_12_data), (50,self.previous_EMA_50_data)]:
+                                weighted_close_price = (ohlcv_data['high'] + ohlcv_data['low'] + 2 * ohlcv_data['close']) / 4
+                                new_ema = await calculate_ema(previous_ema=last_ema_data, new_price=weighted_close_price, ema_period=ema_period)
+                                ema_data[str(ema_period)] = new_ema
+                                    
+                            self.indicator_return_dict[tf] = {
+                                'ema_9': ema_data.get('9'),
+                                'ema_12': ema_data.get('12'),
+                                'ema_50': ema_data.get('50'),
+                                'timestamp': ohlcv_data.get('time')
+                            }
+
+                        # we use UTC timestamp, so don't be confuse if you get 1h data when indian time is 14:30, cuz' at that time UTC will be 09:00
+            
+                    except Exception as e:
+                        logger.error(
+                            f"AppendIndicatorsValuesConsumer's process_and_send_ema_data() raised error while appending data. \n "
+                            f"Exception: {e}")
+                        await self.send(json.dumps(dict()))
+
+        except Exception as e:
+            logger.error(
+                f"AppendIndicatorsValuesConsumer's process_and_send_ema_data() raised error while appending data. \n "
+                f"Exception: {e}")
+            await self.send(json.dumps(dict()))
+
+        else:
+            logger.info(
+                f"AppendIndicatorsValuesConsumer's process_and_send_ema_data() executed successfully.\n")
+            await self.send(json.dumps(self.indicator_return_dict))
+                                            
+    # append new volume to data (timeframe-5m)
+    async def process_and_send_volume_data(self):
+        # we use UTC timestamp, so don't be confuse if you get 1h data when indian time is 14:30, cuz' at that time UTC will be 09:00
+        self.indicator_return_dict_volume = dict()
+        self.indicator_return_dict_volume['baseVolume'] = 0
+        try:
+            while self.indicator_return_dict_volume['baseVolume'] == 0:
+                response = await self.getOHLCV.fetch_cryptocompare_data(url=url_mapping.get('m'), aggregate=5, limit =3)
+                response_data_dict = {data['time']: data for data in response.get('Data', {}).get('Data', [])}
+                ohlcv_data = response_data_dict[self.timestamp_current]
+                self.indicator_return_dict_volume['baseVolume'] = ohlcv_data.get('volumefrom', 0)
+            self.indicator_return_dict_volume['timestamp'] = ohlcv_data.get('time', self.indicator_return_dict.get('timestamp', 0))
+
+        except Exception as e:
+            logger.error(
+                f"AppendIndicatorsValuesConsumer's process_and_send_volume_data() raised error while appending data. \n "
+                f"Exception: {e}")
+            await self.send(json.dumps(dict()))
+
+        else:
+            logger.info(
+                f"AppendIndicatorsValuesConsumer's process_and_send_volume_data() executed successfully.\n")
+            await self.send(json.dumps(self.indicator_return_dict_volume))

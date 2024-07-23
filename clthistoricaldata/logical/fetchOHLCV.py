@@ -38,20 +38,34 @@ class fetchOHLCV:
 
     # Helper function to fetch data from CryptoCompare API
     async def fetch_cryptocompare_data(self, url, aggregate, limit, toTs=False):
-        try:
-            params = {
-                'fsym': self.symbol,
-                'tsym': self.currency,
-                'aggregate': aggregate,
-                'limit': limit,
-                'api_key': self.API_KEY
+        response = []
+        params = {
+            'fsym': self.symbol,
+            'tsym': self.currency,
+            'aggregate': aggregate,
+            'limit': limit,
+            'api_key': self.API_KEY
             }
-            if toTs:
-                params['toTs'] = toTs
+        
+        if toTs:
+            params['toTs'] = toTs
+        try:
             response = requests.get(url, params=params)
-            return response.json()
+
+        except ConnectionError as connError:
+            logger.warning(f"fetch_cryptocompare_data() raised warning for {url}. \n Exception: {connError} \n")
+            isConnErrorGone = False
+            while isConnErrorGone:
+                response = requests.get(url, params=params)
+                if len(response.json()) > 0:
+                    isConnErrorGone = True
+                    logger.info(f"fetch_cryptocompare_data() fetch data successfully while connError for {url}. \n Exception: {connError} \n") 
+
         except Exception as e:
             logger.warning(f"fetch_cryptocompare_data() raised warning for {url}. \n Exception: {e} \n")
+       
+        finally:
+            return response.json()
 
     # Fetch minute data for specified currency
     async def fetch_cryptocompare_minute_data(self, aggregate, limit, toTs=False):
