@@ -1,5 +1,5 @@
 # API_KEY
-API_KEY = '85a8da1ac80aa8567c66e36edf6f63d9cc79ba55d0fdf45f31e0a9e9d1fa4de9'
+API_KEY = '639cd853ea00148b49fcafce5e106c7fd71db198e8f3d5ee672554de6cfbaa7e'
 
 # Historical minute data api
 OHLCV_min_api = 'https://min-api.cryptocompare.com/data/v2/histominute'

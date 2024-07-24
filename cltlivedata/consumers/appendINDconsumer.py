@@ -7,6 +7,7 @@ import logging
 import asyncio
 from clthistoricaldata.logical.fetchOHLCV import fetchOHLCV as ohlcvdata
 from clthistoricaldata.static.constants import url_mapping
+from cltlivedata.static.constants import ema_tf_mapping
 from common.appendIndicatorsWithLive import calculate_ema
 
 # Get an instance of a logger for the 'clthistoricaldata' app
@@ -50,9 +51,12 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
             received_data = json.loads(text_data)
             # self.timeframe = received_data.get('timeframe')
             self.ticker = received_data.get('ticker')
-            self.previous_EMA_9_data = received_data.get('previous_EMA_9_data')
-            self.previous_EMA_12_data = received_data.get('previous_EMA_12_data')
-            self.previous_EMA_50_data = received_data.get('previous_EMA_50_data')
+            self.EMA_5m = received_data.get('5m')
+            self.EMA_15m = received_data.get('15m')
+            self.EMA_1h = received_data.get('1h')
+            self.EMA_4h = received_data.get('4h')
+            self.EMA_1d = received_data.get('1d')
+
         
         except Exception as e:
             logger.error(
@@ -74,11 +78,12 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
              tf for tf in ['5m', '15m', '1h', '4h', '1d'] 
                  if await helper.find_or_check_interval(timestamp=self.timestamp_current, timeframe=tf, isCheck=True)
             ]
+
             # Start processing EMA data and volume data concurrently
             ema_task = asyncio.create_task(self.process_and_send_ema_data())
             volume_task = asyncio.create_task(self.process_and_send_volume_data())
                 
-                # Await both tasks to ensure they complete
+            # Await both tasks to ensure they complete
             await ema_task
             await volume_task
            
@@ -98,39 +103,46 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
     # append new ema to data (timeframes- 5m, 15m, 1h, 4h, 1d)
     async def process_and_send_ema_data(self):
         try:
+            self.indicator_return_dict['timestamp'] = self.timestamp_current
+            self.indicator_return_dict['ticker'] = self.input_ticker
+            
             for tf in self.valid_tf_to_append_data:
                     time_digit = int(''.join(filter(str.isdigit, tf)))
                     time_char = ''.join(filter(str.isalpha, tf))
-                        
-                    try:
-                        url = url_mapping.get(time_char)
-                        response = await self.getOHLCV.fetch_cryptocompare_data(url=url, aggregate=time_digit, limit =5)
-                        response_data_dict = {data['time']: data for data in response.get('Data', {}).get('Data', [])}
+                    previous_EMA = getattr(self, ema_tf_mapping.get(tf), None) # get data resp. to tf
+                    
+                    if previous_EMA:
+                        previous_EMA_9_data = previous_EMA.get('previous_EMA_9_data')
+                        previous_EMA_12_data = previous_EMA.get('previous_EMA_12_data')
+                        previous_EMA_50_data = previous_EMA.get('previous_EMA_50_data')
 
-                        if self.timestamp_current in response_data_dict.keys():
-                            ohlcv_data = response_data_dict[self.timestamp_current]
-                            ema_data = dict()
+                        try:
+                            url = url_mapping.get(time_char)
+                            response = await self.getOHLCV.fetch_cryptocompare_data(url=url, aggregate=time_digit, limit =5)
+                            response_data_dict = {data['time']: data for data in response.get('Data', {}).get('Data', [])}
 
-                            for ema_period, last_ema_data in [(9,self.previous_EMA_9_data), (12, self.previous_EMA_12_data), (50,self.previous_EMA_50_data)]:
-                                weighted_close_price = (ohlcv_data['high'] + ohlcv_data['low'] + 2 * ohlcv_data['close']) / 4
-                                new_ema = await calculate_ema(previous_ema=last_ema_data, new_price=weighted_close_price, ema_period=ema_period)
-                                ema_data[str(ema_period)] = new_ema
-                                    
-                            self.indicator_return_dict[tf] = {
-                                'ema_9': ema_data.get('9'),
-                                'ema_12': ema_data.get('12'),
-                                'ema_50': ema_data.get('50'),
-                                'timestamp': ohlcv_data.get('time'),
-                                'ticker' : self.input_ticker
-                            }
+                            if self.timestamp_current in response_data_dict.keys():
+                                ohlcv_data = response_data_dict[self.timestamp_current]
+                                ema_data = dict()
 
-                        # we use UTC timestamp, so don't be confuse if you get 1h data when indian time is 14:30, cuz' at that time UTC will be 09:00
-            
-                    except Exception as e:
-                        logger.error(
-                            f"AppendIndicatorsValuesConsumer's process_and_send_ema_data() raised error while appending data. \n "
-                            f"Exception: {e}")
-                        await self.send(json.dumps(dict()))
+                                for ema_period, last_ema_data in [(9, previous_EMA_9_data), (12, previous_EMA_12_data), (50, previous_EMA_50_data)]:
+                                    weighted_close_price = (ohlcv_data['high'] + ohlcv_data['low'] + 2 * ohlcv_data['close']) / 4
+                                    new_ema = await calculate_ema(previous_ema=last_ema_data, new_price=weighted_close_price, ema_period=ema_period)
+                                    ema_data[str(ema_period)] = new_ema
+                                        
+                                self.indicator_return_dict[tf] = {
+                                    'ema_9': ema_data.get('9'),
+                                    'ema_12': ema_data.get('12'),
+                                    'ema_50': ema_data.get('50')
+                                }
+
+                            # we use UTC timestamp, so don't be confuse if you get 1h data when indian time is 14:30, cuz' at that time UTC will be 09:00
+                
+                        except Exception as e:
+                            logger.error(
+                                f"AppendIndicatorsValuesConsumer's process_and_send_ema_data() raised error while appending data. \n "
+                                f"Exception: {e}")
+                            await self.send(json.dumps(dict()))
 
         except Exception as e:
             logger.error(
