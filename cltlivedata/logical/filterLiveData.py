@@ -78,18 +78,18 @@ class filterLiveData:
             # Remove items from bin_ranges based on the missing keys
             filtered_bin_ranges = [bin_ranges[i] for i in range(len(bin_ranges)) if i not in missing_keys]
 
-            if all(len(lst) == len(unique_bins) for lst in [bin_volumes, filtered_bin_ranges, formatted_bin_percentages]):
-                try:
+            if len(set(len(lst) for lst in [bin_volumes, filtered_bin_ranges, formatted_bin_percentages])) == 1: 
+                try: # replaced bin_rages with filtered_bin_ranges, cross check it.
                     data = {
                         'low_high_price': [i for i in range(1, len(unique_bins) + 1)],
-                        'bin_range': bin_ranges,
-                        'bin_volume': [bin_volumes[i] for i in range(len(unique_bins))],
-                        'bin_percentage': [formatted_bin_percentages[i] for i in range(len(unique_bins))]
+                        'bin_range': filtered_bin_ranges,
+                        'bin_volume': [volume for volume in bin_volumes.values()],
+                        'bin_percentage': [percentage for percentage in formatted_bin_percentages.values()]
                     }
                 except Exception as e:
-                    logger.error(f"filterLiveData's process_trade_data(): length mismatch for give data. Lenghts are- "
+                    logger.error(f"filterLiveData's process_trade_data(): length mismatch for given data. Lenghts are- "
                                  f"bin_volume: {len(bin_volumes)}, formatted_bin_"
-                                 f"percentages: {len(formatted_bin_percentages)}, bin_ranges: {len(bin_ranges)}, "
+                                 f"percentages: {len(formatted_bin_percentages)}, "
                                  f"bins: {len(unique_bins)}\n Exception: {e}")
                     return dict()
 
