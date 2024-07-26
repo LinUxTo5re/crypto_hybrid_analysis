@@ -1,7 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from cltlivedata.static.constants import append_data_channel, API_KEY, quote_currency
-from cltlivedata.logical.filterLiveData import filterLiveData
 import cltlivedata.logical.datahelper as helper
 import logging
 from clthistoricaldata.logical.fetchOHLCV import fetchOHLCV as ohlcvdata

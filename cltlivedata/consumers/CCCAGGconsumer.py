@@ -2,7 +2,7 @@ import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import websockets
-from cltlivedata.static.constants import CCCAGG_URL, live_bars_channel, API_KEY, quote_currency, append_data_channel
+from cltlivedata.static.constants import CCCAGG_URL, API_KEY, quote_currency, append_data_channel
 from cltlivedata.logical.filterLiveData import filterLiveData
 import cltlivedata.logical.datahelper as helper
 import logging
