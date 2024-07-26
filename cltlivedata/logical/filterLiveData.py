@@ -66,7 +66,7 @@ class filterLiveData:
             total_volume = sum(bin_volumes.values())
 
             # Calculate the percentage of total volume for each bin
-            bin_percentages = {bin_label: volume / total_volume * 100 for bin_label, volume in bin_volumes.items()}
+            bin_percentages = {bin_label: (volume / total_volume) * 100 for bin_label, volume in bin_volumes.items()}
 
             # Format bin percentages to 2 decimal places
             formatted_bin_percentages = {bin_label: f"{percentage:.2f}" for bin_label, percentage in
