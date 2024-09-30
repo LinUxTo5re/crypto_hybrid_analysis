@@ -65,13 +65,20 @@ TEMPLATES = [
 # WSGI_APPLICATION = 'analyzedcrypto.wsgi.application'
 ASGI_APPLICATION = 'analyzedcrypto.asgi.application'
 
-# Channel Layer
+# Channel Layer - Linux (dev/deployable)
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('localhost', 6379)],
+#         },
+#     },
+# }
+
+# Channel Layer - Windows (development purpose only)
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('localhost', 6379)],
-        },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
 
