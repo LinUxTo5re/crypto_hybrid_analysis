@@ -12,7 +12,7 @@ function App() {
 
   return (
     <Fragment>
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '20px', overflowX: 'hidden' }}>
         <Header onCryptoValueChange={handleCryptoValueChange} />
       </div>
       <div className="">

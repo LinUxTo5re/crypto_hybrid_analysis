@@ -33,6 +33,11 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
   };
   
 
-  export const handleApplyButtonClick = () => {
+  export const handleApplyButtonClick = (selectedMarket) => {
+
+    console.log(selectedMarket);
+    if (selectedMarket === ""){
+      console.log("hello buddy")
+    }
     console.log('Apply Button clicked');
   };

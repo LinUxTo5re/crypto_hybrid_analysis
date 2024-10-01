@@ -35,16 +35,34 @@ function AnalyticFrame({ cryptoValue }) {
     setIsValued
   };
 
-  const handleMarketInputChange = (event) => {
+  const handleMarketInputChange = (event, index) => {
     const upperCaseValue = event.target.value.toUpperCase();
+    if (upperCaseValue.length > 0){
+      setIsValued((prevState) => {
+        const newState = [...prevState];
+        newState[index] = true;
+        return newState;
+      });
+    }
+    else{
+      setIsValued((prevState) => {
+        const newState = [...prevState];
+        newState[index] = false;
+        return newState;
+      });
+    }
     setMarketValue(upperCaseValue);
   };
 
   const handleSwitchChange = (event) => {
     setChecked(event.target.checked);
-    if(checked){
-      setMarketValue("")
-    }
+    setMarketValue("");
+
+    setIsValued((prevState) =>{
+      const newState = [...prevState];
+      newState[0] = false;
+      return newState;
+    });
   };
   
 
@@ -89,7 +107,7 @@ function AnalyticFrame({ cryptoValue }) {
                     <TextField
                       label="Markets"
                       value={marketValue}
-                      onChange={handleMarketInputChange}
+                      onChange={(event) => {handleMarketInputChange(event, 0);}}
                       sx={{ width: 300, margin: '0 10px' }}
                       inputProps={{ maxLength: 6 }}
                       required
@@ -143,7 +161,7 @@ function AnalyticFrame({ cryptoValue }) {
                     variant="contained"
                     disabled={!isValued[index]}
                     endIcon={<SendIcon />}
-                    onClick={handleApplyButtonClick}
+                    onClick={() => handleApplyButtonClick(selectedMarket)}
                   >
                     Apply
                   </Button>
