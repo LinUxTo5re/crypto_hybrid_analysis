@@ -37,22 +37,15 @@ function AnalyticFrame({ cryptoValue }) {
 
   const handleMarketInputChange = (event, index) => {
     const upperCaseValue = event.target.value.toUpperCase();
-    if (upperCaseValue.length > 0){
-      setIsValued((prevState) => {
-        const newState = [...prevState];
-        newState[index] = true;
-        return newState;
-      });
-    }
-    else{
-      setIsValued((prevState) => {
-        const newState = [...prevState];
-        newState[index] = false;
-        return newState;
-      });
-    }
     setMarketValue(upperCaseValue);
+  
+    setIsValued((prevState) => {
+      const newState = [...prevState];
+      newState[index] = upperCaseValue.length > 0;
+      return newState;
+    });
   };
+  
 
   const handleSwitchChange = (event) => {
     setChecked(event.target.checked);
@@ -64,7 +57,6 @@ function AnalyticFrame({ cryptoValue }) {
       return newState;
     });
   };
-  
 
   const boxArray = Array.from({ length: cryptoValueInt }, (_, index) => index);
 
@@ -144,7 +136,7 @@ function AnalyticFrame({ cryptoValue }) {
                   <Autocomplete
                     disablePortal
                     id={`combo-box-strategy-${index}`}
-                    options={vj.timeFrames}
+                    options={vj.strategies}
                     value={selectedStrategies[index]}
                     sx={{ width: 300, margin: '0 10px' }}
                     renderInput={(params) => (
@@ -161,7 +153,7 @@ function AnalyticFrame({ cryptoValue }) {
                     variant="contained"
                     disabled={!isValued[index]}
                     endIcon={<SendIcon />}
-                    onClick={() => handleApplyButtonClick(selectedMarket)}
+                    onClick={() => handleApplyButtonClick(selectedMarket?selectedMarket:marketValue, selectedTf, selectedIndicators, selectedStrategies)}
                   >
                     Apply
                   </Button>

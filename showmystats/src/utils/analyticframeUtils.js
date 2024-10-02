@@ -1,3 +1,6 @@
+import axios from 'axios';
+import * as endpoints from '../constants/endpoints';
+
 export const handleAutocompleteChange = (id, value, index, setStateFunctions) => {
     const { setSelectedMarket, setSelectedIndicators, setSelectedStrategies, setSelectedTf, setIsValued } = setStateFunctions;
   
@@ -33,11 +36,28 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
   };
   
 
-  export const handleApplyButtonClick = (selectedMarket) => {
+  export const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
 
-    console.log(selectedMarket);
-    if (selectedMarket === ""){
+    console.log(market);
+    if (market === ""){
       console.log("hello buddy")
     }
     console.log('Apply Button clicked');
+    const formData = {
+      market: market,
+      indicators: selectedIndicators,
+      strategies: selectedStrategies,
+      tf: selectedTf,
+    };
+
+    try {
+      const response = await axios.post(endpoints.Submit_Btn_URL, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Form data submitted successfully:', response.data);
+    } catch (error) {
+      console.error('Error submitting form data:', error);
+    }
   };
