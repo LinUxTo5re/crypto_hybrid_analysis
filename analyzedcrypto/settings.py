@@ -44,6 +44,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Allowing api call from react app
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 ROOT_URLCONF = 'analyzedcrypto.urls'
 
 TEMPLATES = [

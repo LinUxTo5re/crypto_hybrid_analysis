@@ -39,7 +39,6 @@ async def fetch_historical_data(request):
         logger.warning("NO DATA AVAILABLE, DEBUG AND CHECK CODE")
     return JsonResponse(json_data, safe=False)
 
-
 @api_view(['GET'])
 def index(request):
     random_data = {
@@ -50,6 +49,14 @@ def index(request):
     }
     return Response(random_data)
 
+@api_view(['POST'])
+def submit_data(request):
+    if request.method == 'POST':
+        print("ReactJS called success....")
+        return JsonResponse({'message': 'Data received successfully!'}, status=200)
+    else:
+        return JsonResponse({'message': "error" }, status = 404) 
+     
 """
 note: instead of calling one endpoint for all timeframe indicator creation,
 call separate endpoints for each timeframe which will enhanch performance in a way that
