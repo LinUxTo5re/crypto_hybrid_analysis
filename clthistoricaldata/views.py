@@ -9,6 +9,7 @@ from clthistoricaldata.static.constants import quote_currency, indicators_tf
 from clthistoricaldata.logical.mlhistdata import designMLmodel
 from clthistoricaldata.logical.shortIndicators import designIndicator
 import logging
+import json
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('clthistoricaldata')
@@ -33,7 +34,10 @@ async def fetch_historical_data(request):
         ohlcv_data = await designIndicators.Indicators_Indication()
         
     # data = {"message" : "hello buddy"} # sample, remove later
+    ohlcv_data = ohlcv_data.fillna(value=0)
     json_data = ohlcv_data.to_dict(orient='records')
+    # await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
+
     if not json_data:
         json_data = {"message" : "No data avaialbe, something went wrong."}
         logger.warning("NO DATA AVAILABLE, DEBUG AND CHECK CODE")
