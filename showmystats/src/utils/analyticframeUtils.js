@@ -41,7 +41,7 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
 //   function would trigger websockets for live bar graph with most traded area and
 //   trade posibilites
 
-  export const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
+  export const initiateDataFetching = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
     const formData = {
       market: market,
       indicators: selectedIndicators,
@@ -61,9 +61,9 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
       // isml -> bool (true)
 
       let isml = false; // default machine prdiction set to false, modify later
-      selectedTf = '15m' //default TF, modify this later for multiple TF
+      let timeFrameForIndicator = '15m' //default TF, modify this later for multiple TF
 
-      const Fetch_HistData_URL = endpoints.Fetch_HistData_URL + '?market=' + market + '&tf=' + selectedTf + '&isml=' + isml;
+      const Fetch_HistData_URL = endpoints.Fetch_HistData_URL + '?market=' + market + '&tf=' + timeFrameForIndicator + '&isml=' + isml;
 
       const response = await axios.get(Fetch_HistData_URL, {
         headers: {
@@ -81,12 +81,13 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
 
         previous_data.Last_UpdateTm = response.data[response.data.length - 1]['time'];
       }
-      
-    
+      // Establishing connection with websocket for statistaicalAnalysis component
 
       console.log('Form data submitted successfully');
+      return previous_data;
     } catch (error) {
       console.error('Error submitting form data', error);
+      return false;
     }
   };
 

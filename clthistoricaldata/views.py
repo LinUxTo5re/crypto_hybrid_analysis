@@ -33,10 +33,8 @@ async def fetch_historical_data(request):
         designIndicators = designIndicator(data, timeframe)
         ohlcv_data = await designIndicators.Indicators_Indication()
         
-    # data = {"message" : "hello buddy"} # sample, remove later
     ohlcv_data = ohlcv_data.fillna(value=0)
     json_data = ohlcv_data.to_dict(orient='records')
-    # await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
 
     if not json_data:
         json_data = {"message" : "No data avaialbe, something went wrong."}

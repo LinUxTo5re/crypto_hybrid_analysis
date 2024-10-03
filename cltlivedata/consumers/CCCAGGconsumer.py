@@ -12,6 +12,8 @@ import asyncio
 logger = logging.getLogger('cltlivedata')
 
 # class fetch live CCCAGG data 
+# This consumer will create bar graph with more traded area of 5 minutes
+
 class LiveDataIndexConsumer(AsyncWebsocketConsumer):
 
     # establish websocket connection

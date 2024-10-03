@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, Box, Paper, Autocomplete, TextField, Button, Switch, FormControlLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
@@ -6,7 +6,7 @@ import StatisticalAnalysis from './StatisticalAnalysis';
 import TradePossibilities from './TradePossibilities';
 import '../static/css/styles.css';
 import * as vj from '../constants/variables';
-import { handleAutocompleteChange, handleApplyButtonClick} from '../utils/analyticframeUtils';
+import { handleAutocompleteChange, initiateDataFetching} from '../utils/analyticframeUtils';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -57,6 +57,18 @@ function AnalyticFrame({ cryptoValue }) {
       return newState;
     });
   };
+
+  const [previousCryptoData, setPreviousCryptoData] = useState([]);
+
+  const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
+    console.log("Apply btn clicked, starting fetching relevant crypto data");
+    const result = await initiateDataFetching(market, selectedTf, selectedIndicators, selectedStrategies); 
+
+    if (result){
+      setPreviousCryptoData(result);
+    }
+    console.log(result);
+  }
 
   const boxArray = Array.from({ length: cryptoValueInt }, (_, index) => index);
 
@@ -117,6 +129,7 @@ function AnalyticFrame({ cryptoValue }) {
                     onChange={(event, value) =>
                       handleAutocompleteChange('tf', value, index, setStateFunctions)
                     }
+                    disabled
                   />
 
                   <Autocomplete
@@ -162,7 +175,7 @@ function AnalyticFrame({ cryptoValue }) {
             </Grid>
             <Grid item xs={8}>
               <Item>
-                <StatisticalAnalysis />
+                <StatisticalAnalysis  previousCryptoData = {previousCryptoData}/>
               </Item>
             </Grid>
             <Grid item xs={4} sx={{ marginBottom: '20px' }}>
