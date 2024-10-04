@@ -74,6 +74,7 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
       const previous_data = {};
 
       if (Array.isArray(response.data)){ // fetching last record
+        previous_data.formData = formData;
         previous_data.EMA_5m = [
         response.data[response.data.length-1]['EMA_12'],
         response.data[response.data.length-1]['EMA_50'],

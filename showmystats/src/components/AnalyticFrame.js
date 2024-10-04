@@ -26,6 +26,7 @@ function AnalyticFrame({ cryptoValue }) {
   const [selectedStrategies, setSelectedStrategies] = useState(Array.from({ length: cryptoValueInt }, () => []));
   const [selectedTf, setSelectedTf] = useState(Array.from({ length: cryptoValueInt }, () => ''));
   const [isValued, setIsValued] = useState(Array.from({ length: cryptoValueInt }, () => false));
+  const [isPreviousDataLoad, setisPreviousDataLoad] = useState(false);
 
   const setStateFunctions = {
     setSelectedMarket,
@@ -66,6 +67,7 @@ function AnalyticFrame({ cryptoValue }) {
 
     if (result){
       setPreviousCryptoData(result);
+      setisPreviousDataLoad(true);
     }
     console.log(result);
   }
@@ -173,18 +175,25 @@ function AnalyticFrame({ cryptoValue }) {
                 </div>
               </Item>
             </Grid>
-            <Grid item xs={8}>
-              <Item>
-                <StatisticalAnalysis  previousCryptoData = {previousCryptoData}/>
-              </Item>
+            
+            {isPreviousDataLoad && (
+            <Grid container spacing={2}>
+              <Grid item xs={8}>
+                <Item>
+                  <StatisticalAnalysis previousCryptoData={previousCryptoData} />
+                </Item>
+              </Grid>
+
+              <Grid item xs={4} sx={{ marginBottom: '20px' }}>
+                <Item>
+                  {/* <h1>
+                    <TradePossibilities />
+                  </h1> */}
+                </Item>
+              </Grid>
             </Grid>
-            <Grid item xs={4} sx={{ marginBottom: '20px' }}>
-              <Item>
-                <h1>
-                  <TradePossibilities />
-                </h1>
-              </Item>
-            </Grid>
+          )}
+
           </React.Fragment>
         ))}
       </Grid>
