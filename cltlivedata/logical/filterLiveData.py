@@ -99,6 +99,8 @@ class filterLiveData:
                 result_df['colors'] = colors[:len(unique_bins)]
                 result_df.sort_values(by='low_high_price', ascending=True, inplace=True)
                 result_df['bin_volume'] = result_df['bin_volume'].astype(float)
+                if result_df.isnull().values.any():
+                    result_df.fillna(value = 0)
                 logger.info(
                     f"filterLiveData's process_trade_data() executed. \n message: processed data successfully\n")
 

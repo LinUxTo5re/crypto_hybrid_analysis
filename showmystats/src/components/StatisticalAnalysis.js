@@ -1,36 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import * as endpoints from '../constants/endpoints';
+import 'chartjs-adapter-date-fns';
 
 Chart.register(...registerables);
 
-function StatisticalAnalysis({ previousCryptoData }) {
+function StatisticalAnalysis() {
     const [chartData, setChartData] = useState({
-        labels: ["temp"],
-        datasets: [
-            {
-                data: [15],
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-            {
-                data: [5],
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            },
-            {
-                data: [40],
-                backgroundColor: 'rgba(255, 206, 86, 0.5)',
-            },
-            {
-                data: [10],
-                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            },
-            {
-                data: [20],
-                backgroundColor: 'rgba(153, 102, 255, 0.5)',
-            },
-        ],
+        labels: [],
+        datasets: [],
     });
+
+    const [isDataForBar, SetisDataForBar] = useState(false);
 
     const options = {
         responsive: true,
@@ -39,6 +20,13 @@ function StatisticalAnalysis({ previousCryptoData }) {
                 position: 'top',
                 display: false,
             },
+            tooltip: {
+                callbacks: {
+                    label: function (tooltipItem) {
+                        return `${tooltipItem.dataset.label}: ${tooltipItem.raw}%`;
+                    },
+                },
+            },
             title: {
                 display: true,
                 text: 'Candle With Most Traded Area',
@@ -46,56 +34,101 @@ function StatisticalAnalysis({ previousCryptoData }) {
         },
         scales: {
             x: {
+                type: 'time', // Set x-axis to time type
+                time: {
+                    unit: 'minute', // Customize this based on your time intervals
+                },
                 stacked: true,
+                title: {
+                    display: true,
+                    text: 'Timestamp',
+                },
             },
             y: {
+                beginAtZero: false, // Start from the lowest price range
                 stacked: true,
+                title: {
+                    display: true,
+                    text: 'Price Range',
+                },
             },
         },
     };
-       useEffect(() => {
+
+    useEffect(() => {
         const market = 'KAS';
-    // Create a WebSocket connection
-    const socket = new WebSocket(`ws://localhost:8000/ws/livetrades/${market}`);
+        const socket = new WebSocket(`ws://localhost:8000/ws/livetrades/${market}`);
 
-    // Connection opened
-    socket.addEventListener('open', (event) => {
-        console.log('WebSocket connected');
-        // You can send a message if needed
-        socket.send(JSON.stringify({ action: 'subscribe', market }));
-    });
-
-    // Listen for messages
-    socket.addEventListener('message', (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Message from server:', data);
-        // Update your chart data or state here
-        updateChartData(data);
-    });
-
-    // Handle errors
-    socket.addEventListener('error', (error) => {
-        console.error('WebSocket error:', error);
-    });
-
-    // Cleanup function to close the socket when the component unmounts
-    return () => {
-        socket.close();
-    };}, [chartData]);
-
-    const updateChartData = (newData) => {
-        setChartData((prevData) => {
-            const updatedDatasets = prevData.datasets.map((dataset, index) => ({
-                ...dataset,
-                data: [...dataset.data, newData[index]], // Add new data to each dataset
-            }));
-            return { ...prevData, datasets: updatedDatasets };
+        socket.addEventListener('open', () => {
+            console.log('WebSocket connected');
+            socket.send(JSON.stringify({ action: 'subscribe', market }));
         });
+
+        socket.addEventListener('message', (event) => {
+            const crypto_data = JSON.parse(event.data);
+            console.log('Message from server:', crypto_data);
+            updateChartData(crypto_data);
+        });
+
+        socket.addEventListener('error', (error) => {
+            console.error('WebSocket error:', error);
+        });
+
+        return () => {
+            socket.close();
+        };
+    }, []); // Empty dependency array to run only once on mount
+
+    const updateChartData = (cryptoData) => {
+        const newLabels = [];
+        const newDatasets = [];
+
+        if (typeof cryptoData === 'object' && !Array.isArray(cryptoData)) {
+            cryptoData = Object.values(cryptoData); // Convert object values to an array
+        }
+
+        const time_stamp = cryptoData[0][cryptoData[0].length - 1].extra_data.time_stamp;
+        newLabels.push(new Date(time_stamp * 1000)); // Convert timestamp to Date object
+
+        cryptoData[0].forEach((dataPoint) => {
+            if (dataPoint.bin_range && dataPoint.bin_percentage && dataPoint.colors) {
+                const { bin_range, bin_percentage, colors } = dataPoint;
+
+                // Create a new dataset for each bin
+                newDatasets.push({
+                    label: `Price Range ${dataPoint.low_high_price}`,
+                    data: [bin_percentage], // Percentage for the height of the bar
+                    backgroundColor: colors,
+                    barPercentage: 1.0, // Control bar width
+                    base: bin_range[0], // Starting price of the range (y-axis)
+                    stack: 'Stack 0', // Stack identifier
+                    minBarLength: 1, // Minimum bar length
+                });
+
+                SetisDataForBar(true);
+            }
+        });
+
+        setChartData({
+            labels: newLabels,
+            datasets: newDatasets,
+        });
+        console.log(`chart Data: ${chartData}`);
     };
 
-
-    return <Bar data={chartData} options={options} />;
-
+    return (
+        <>
+            {isDataForBar && (
+                <Bar
+                    data={{
+                        labels: chartData.labels,
+                        datasets: chartData.datasets,
+                    }}
+                    options={options}
+                />
+            )}
+        </>
+    );
 }
 
 export default StatisticalAnalysis;

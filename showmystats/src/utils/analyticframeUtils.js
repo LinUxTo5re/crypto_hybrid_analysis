@@ -75,12 +75,14 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
 
       if (Array.isArray(response.data)){ // fetching last record
         previous_data.formData = formData;
-        previous_data.EMA_5m = [
-        response.data[response.data.length-1]['EMA_12'],
-        response.data[response.data.length-1]['EMA_50'],
-        response.data[response.data.length-1]['EMA_9']];
-
+        previous_data.EMA_5m = {
+          EMA_9: response.data[response.data.length - 1]['EMA_9'],
+          EMA_12: response.data[response.data.length - 1]['EMA_12'],
+          EMA_50: response.data[response.data.length - 1]['EMA_50']
+        };
+        
         previous_data.Last_UpdateTm = response.data[response.data.length - 1]['time'];
+        
       }
       // Establishing connection with websocket for statistaicalAnalysis component
 
