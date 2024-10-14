@@ -1,134 +1,117 @@
-import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-import 'chartjs-adapter-date-fns';
+import { createChart } from 'lightweight-charts';
+import React, { useEffect, useRef } from 'react';
 
-Chart.register(...registerables);
-
-function StatisticalAnalysis() {
-    const [chartData, setChartData] = useState({
-        labels: [],
-        datasets: [],
-    });
-
-    const [isDataForBar, SetisDataForBar] = useState(false);
-
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-                display: false,
-            },
-            tooltip: {
-                callbacks: {
-                    label: function (tooltipItem) {
-                        return `${tooltipItem.dataset.label}: ${tooltipItem.raw}%`;
-                    },
-                },
-            },
-            title: {
-                display: true,
-                text: 'Candle With Most Traded Area',
-            },
-        },
-        scales: {
-            x: {
-                type: 'time', // Set x-axis to time type
-                time: {
-                    unit: 'minute', // Customize this based on your time intervals
-                },
-                stacked: true,
-                title: {
-                    display: true,
-                    text: 'Timestamp',
-                },
-            },
-            y: {
-                beginAtZero: false, // Start from the lowest price range
-                stacked: true,
-                title: {
-                    display: true,
-                    text: 'Price Range',
-                },
-            },
-        },
-    };
+const StatisticalAnalysis = () => {
+    const chartContainerRef = useRef(null);
 
     useEffect(() => {
-        const market = 'KAS';
-        const socket = new WebSocket(`ws://localhost:8000/ws/livetrades/${market}`);
+        const chart = createChart(chartContainerRef.current, {
+            width: chartContainerRef.current.clientWidth,
+            height: 300,
+            layout: 
+            { 
+                textColor: 'black',
+                 background:
+                  { type: 'solid', 
+                    color: 'white' 
+                }
+            },
+            // Control time scale and spacing
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: false, // Show seconds if necessary
+                barSpacing: 100, // More space between candles
+                minBarSpacing: 10, // Prevents candles from getting too compressed
+                rightOffset: 5,  // Adds extra space to the right of the last candle
+                minBarSpacing: 50,
+                ticksVisible: true,            
+            },
+            rightPriceScale: {
+                visible: true,
+                // Adjust the scale to accommodate small decimal values
+                scaleMargins: {
+                    top: 0.1,
+                    bottom: 0.1,
+                },
+            },
+            
+        });
+        const priceFormatConfig = {
+            type: 'price',
+            precision: 8, // Show up to 8 decimal places
+            minMove: 0.00000001, // Smallest price increment
+        };
 
-        socket.addEventListener('open', () => {
-            console.log('WebSocket connected');
-            socket.send(JSON.stringify({ action: 'subscribe', market }));
+        const series1 = chart.addCandlestickSeries({
+            upColor: 'green',
+            downColor: 'red',
+             wickUpColor: 'white', 
+             wickDownColor: 'white',
+            priceFormat: priceFormatConfig,
+
         });
 
-        socket.addEventListener('message', (event) => {
-            const crypto_data = JSON.parse(event.data);
-            console.log('Message from server:', crypto_data);
-            updateChartData(crypto_data);
+        const series2 = chart.addCandlestickSeries({
+            upColor: 'blue',
+            downColor: 'orange',
+            wickUpColor: 'white', 
+            wickDownColor: 'white',
+            priceFormat: priceFormatConfig,
+
         });
 
-        socket.addEventListener('error', (error) => {
-            console.error('WebSocket error:', error);
+        const series3 = chart.addCandlestickSeries({
+            upColor: 'green',
+            downColor: 'red',
+            wickUpColor: 'white', 
+             wickDownColor: 'white',
+            priceFormat: priceFormatConfig,
+
         });
+
+        const series4 = chart.addCandlestickSeries({
+            upColor: 'blue',
+            downColor: 'orange',
+            wickUpColor: 'white', 
+             wickDownColor: 'white',
+            priceFormat: priceFormatConfig,
+
+        });
+        const data1 = [
+            { time: 1696208400, open: 0.00000055, high:  0.00000065, low:  0.00000055, close:  0.00000065 },  // Upward movement
+            { time: 1696208700, open:  0.00000065, high:  0.00000068, low:  0.00000056, close:  0.00000056 },  // Downward movement
+        ];
+        
+        const data2 = [
+            { time: 1696208400, open:  0.00000065, high:  0.00000075, low:  0.00000065, close:  0.00000075 },  // Upward movement
+            { time: 1696208700, open:  0.00000056, high:  0.00000056, low:  0.00000054, close:  0.00000054 },  // Downward movement
+            ];
+        
+        const data3 = [
+            { time: 1696208400, open:  0.00000075, high:  0.00000085, low:  0.00000075, close:  0.00000085 },  // Upward movement
+            { time: 1696208700, open:  0.00000054, high:  0.00000054, low:  0.00000050, close:  0.00000050 },  // Downward movement
+            ];
+        
+        const data4 = [
+            { time: 1696208400, open:  0.00000085, high:  0.00000095, low:  0.00000085, close:  0.00000095 },  // Upward movement
+            { time: 1696208700, open:  0.00000050, high:  0.00000050, low:  0.00000035, close:  0.00000035 },  // Downward movement
+            ];
+        
+
+        series1.setData(data1);
+        series2.setData(data2);
+        series3.setData(data3);
+        series4.setData(data4);
+        chart.timeScale().fitContent();
+
+
 
         return () => {
-            socket.close();
+            chart.remove();
         };
-    }, []); // Empty dependency array to run only once on mount
+    }, []);
 
-    const updateChartData = (cryptoData) => {
-        const newLabels = [];
-        const newDatasets = [];
-
-        if (typeof cryptoData === 'object' && !Array.isArray(cryptoData)) {
-            cryptoData = Object.values(cryptoData); // Convert object values to an array
-        }
-
-        const time_stamp = cryptoData[0][cryptoData[0].length - 1].extra_data.time_stamp;
-        newLabels.push(new Date(time_stamp * 1000)); // Convert timestamp to Date object
-
-        cryptoData[0].forEach((dataPoint) => {
-            if (dataPoint.bin_range && dataPoint.bin_percentage && dataPoint.colors) {
-                const { bin_range, bin_percentage, colors } = dataPoint;
-
-                // Create a new dataset for each bin
-                newDatasets.push({
-                    label: `Price Range ${dataPoint.low_high_price}`,
-                    data: [bin_percentage], // Percentage for the height of the bar
-                    backgroundColor: colors,
-                    barPercentage: 1.0, // Control bar width
-                    base: bin_range[0], // Starting price of the range (y-axis)
-                    stack: 'Stack 0', // Stack identifier
-                    minBarLength: 1, // Minimum bar length
-                });
-
-                SetisDataForBar(true);
-            }
-        });
-
-        setChartData({
-            labels: newLabels,
-            datasets: newDatasets,
-        });
-        console.log(`chart Data: ${chartData}`);
-    };
-
-    return (
-        <>
-            {isDataForBar && (
-                <Bar
-                    data={{
-                        labels: chartData.labels,
-                        datasets: chartData.datasets,
-                    }}
-                    options={options}
-                />
-            )}
-        </>
-    );
-}
+    return <div ref={chartContainerRef} style={{ position: 'relative', width: '100%', height: '300px' }} />;
+};
 
 export default StatisticalAnalysis;
