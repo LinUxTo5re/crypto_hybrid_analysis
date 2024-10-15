@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, Box, Paper, Autocomplete, TextField, Button, Switch, FormControlLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
 import StatisticalAnalysis from './StatisticalAnalysis';
-import TradePossibilities from './TradePossibilities';
 import '../static/css/styles.css';
 import * as vj from '../constants/variables';
 import { handleAutocompleteChange, initiateDataFetching} from '../utils/analyticframeUtils';
@@ -180,7 +179,7 @@ function AnalyticFrame({ cryptoValue }) {
             <Grid container spacing={2}>
               <Grid item xs={8}>
                 <Item>
-                  <StatisticalAnalysis previousCryptoData={previousCryptoData} />
+                  <StatisticalAnalysis previousCryptoData={previousCryptoData}/>
                 </Item>
               </Grid>
 
