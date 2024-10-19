@@ -26,8 +26,8 @@ function AnalyticFrame({ cryptoValue }) {
   const [selectedStrategies, setSelectedStrategies] = useState(Array.from({ length: cryptoValueInt }, () => []));
   const [selectedTf, setSelectedTf] = useState(Array.from({ length: cryptoValueInt }, () => ''));
   const [isValued, setIsValued] = useState(Array.from({ length: cryptoValueInt }, () => false));
-  const [isPreviousDataLoad, setisPreviousDataLoad] = useState(false);
   const [isAppliedBtnClicked, setIsAppliedBtnClicked] = useState(null);
+  const [displayStatus, setDisplayStatus] = useState('none');
 
   const setStateFunctions = {
     setSelectedMarket,
@@ -62,6 +62,7 @@ function AnalyticFrame({ cryptoValue }) {
 
   const [previousCryptoData, setPreviousCryptoData] = useState([]);
 
+
   const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
     setIsAppliedBtnClicked(true);
     console.log("Apply btn clicked, starting fetching relevant crypto data");
@@ -69,8 +70,8 @@ function AnalyticFrame({ cryptoValue }) {
 
     if (result){
       setPreviousCryptoData(result);
-      setisPreviousDataLoad(true);
       setIsAppliedBtnClicked(false);
+      setDisplayStatus('flex');
     }
     console.log(result);
   }
@@ -178,9 +179,17 @@ function AnalyticFrame({ cryptoValue }) {
                 </div>
               </Item>
             </Grid>
-            
-            {isPreviousDataLoad ? (
-            <Grid container spacing={2}>
+          
+            <Grid container justifyContent="center" alignItems="center" >
+
+              {isAppliedBtnClicked ? (
+                <LoadingIndicator msg = {"Fetching Previous Crypto Data ...."}/>
+              ) : (
+             <LoadingIndicator msg = {"Welcome to TRADE ❤️"} isCircularLoadUsing= {false}/>         
+            )}
+           </Grid>
+           
+            <Grid container spacing={2} style={{display: displayStatus}}>
               <Grid item xs={8}>
                 <Item>
                   <StatisticalAnalysis previousCryptoData={previousCryptoData}/>
@@ -195,14 +204,6 @@ function AnalyticFrame({ cryptoValue }) {
                 </Item>
               </Grid>
             </Grid>
-            ) : null}
-
-          {isAppliedBtnClicked ? (
-            <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
-            <LoadingIndicator msg = {"Fetching Previous Crypto Data ...."}/>
-        </Grid>
-          ) : null}
-          
           </React.Fragment>
         ))}
       </Grid>
