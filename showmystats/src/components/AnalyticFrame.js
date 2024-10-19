@@ -6,6 +6,7 @@ import StatisticalAnalysis from './StatisticalAnalysis';
 import '../static/css/styles.css';
 import * as vj from '../constants/variables';
 import { handleAutocompleteChange, initiateDataFetching} from '../utils/analyticframeUtils';
+import LoadingIndicator from '../static/js/LoadingIndicator';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -26,6 +27,7 @@ function AnalyticFrame({ cryptoValue }) {
   const [selectedTf, setSelectedTf] = useState(Array.from({ length: cryptoValueInt }, () => ''));
   const [isValued, setIsValued] = useState(Array.from({ length: cryptoValueInt }, () => false));
   const [isPreviousDataLoad, setisPreviousDataLoad] = useState(false);
+  const [isAppliedBtnClicked, setIsAppliedBtnClicked] = useState(null);
 
   const setStateFunctions = {
     setSelectedMarket,
@@ -61,12 +63,14 @@ function AnalyticFrame({ cryptoValue }) {
   const [previousCryptoData, setPreviousCryptoData] = useState([]);
 
   const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
+    setIsAppliedBtnClicked(true);
     console.log("Apply btn clicked, starting fetching relevant crypto data");
     const result = await initiateDataFetching(market, selectedTf, selectedIndicators, selectedStrategies); 
 
     if (result){
       setPreviousCryptoData(result);
       setisPreviousDataLoad(true);
+      setIsAppliedBtnClicked(false);
     }
     console.log(result);
   }
@@ -175,7 +179,7 @@ function AnalyticFrame({ cryptoValue }) {
               </Item>
             </Grid>
             
-            {isPreviousDataLoad && (
+            {isPreviousDataLoad ? (
             <Grid container spacing={2}>
               <Grid item xs={8}>
                 <Item>
@@ -191,8 +195,14 @@ function AnalyticFrame({ cryptoValue }) {
                 </Item>
               </Grid>
             </Grid>
-          )}
+            ) : null}
 
+          {isAppliedBtnClicked ? (
+            <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
+            <LoadingIndicator msg = {"Fetching Previous Crypto Data ...."}/>
+        </Grid>
+          ) : null}
+          
           </React.Fragment>
         ))}
       </Grid>

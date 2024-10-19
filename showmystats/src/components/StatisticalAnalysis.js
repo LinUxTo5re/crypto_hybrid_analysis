@@ -1,6 +1,9 @@
 import { createChart } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
+import { Grid } from '@mui/material';
+import LoadingIndicator from '../static/js/LoadingIndicator';
 import * as endpoints from '../constants/endpoints';
+import { getPriceFormatConfig } from '../utils/statisticalAnalysisUtils';
 
 const StatisticalAnalysis = ({ previousCryptoData }) => {
     const chartContainerRef = useRef(null);
@@ -35,16 +38,28 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
             },
             rightPriceScale: {
                 visible: true,
-                scaleMargins: {
-                    top: 0.1,
-                    bottom: 0.1,
+                scaleMargins:{
+                    top: 0.3,
+                    bottom: 0.1
+                },
+            },
+            grid: {
+                vertLines: {
+                    color: '#D6DCDE',
+                    style: 0,
+                    visible: true,
+                },
+                horzLines: {
+                    color: 'rgba(70, 130, 180, 0.5)', 
+                    visible: true,
                 },
             },
         });
+        
     }, []); // Chart is created only once when component mounts
     
     // WebSocket logic
-    useEffect(() => {
+    useEffect(() => {        
         const market = previousCryptoData?.formData?.market;
         if (!market) return;
 
@@ -58,25 +73,14 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         socket.addEventListener('message', (event) => {
             try {
                 const crypto_data = JSON.parse(event.data);
-                if (crypto_data && typeof crypto_data === 'object' && !Array.isArray(crypto_data)) {
-                    const cryptoDataValues = Object.values(crypto_data);
-                    const totalSeries = cryptoDataValues[0].reduce((acc, ikey) => acc + (ikey.hasOwnProperty('low_high_price') ? 1 : 0), 0);
+                const totalSeries = crypto_data['crypto_data'].reduce((acc, ikey) => acc + (ikey.hasOwnProperty('low_high_price') ? 1 : 0), 0);
 
-                    for (let i = 0; i < cryptoDataValues[0].length; i++) {
-                        if (cryptoDataValues[0][i]['low_high_price'] === 1) {
-                            minBarRangePriceRef.current = cryptoDataValues[0][i]['bin_range'][0];
-                            continue;
-                        }
+                minBarRangePriceRef.current = crypto_data['crypto_data'][0]['bin_range'][0];
+                maxBarRangePriceRef.current = crypto_data?.['crypto_data']?.[crypto_data['crypto_data'].length - 2]['bin_range'][1];
 
-                        if (cryptoDataValues[0][i]['low_high_price'] === cryptoDataValues[0].length - 1) {
-                            maxBarRangePriceRef.current = cryptoDataValues[0][i]['bin_range'][1];
-                            break;
-                        }
-                    }
-
-                    numberOfSeriesRef.current = totalSeries;
-                    setCryptoData(crypto_data);
-                }
+                numberOfSeriesRef.current = totalSeries;
+                setCryptoData(crypto_data);
+                console.log('crypto data:  ', crypto_data);
             } catch (error) {
                 console.error('Error parsing WebSocket message:', error);
             }
@@ -93,89 +97,67 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         return () => {
             socket.close(); // Close WebSocket on unmount
         };
-    }, [previousCryptoData]); // Only re-run when `previousCryptoData` changes
+    }, [previousCryptoData]); // Only re-run when previousCryptoData changes
 
     // Update chart with new series data
     useEffect(() => {
         if (!cryptoData || numberOfSeriesRef.current === 0 || !chartRef.current) return;
-    
-        const priceFormatConfig = {
-            type: 'price',
-            precision: 8,
-            minMove: 0.00000001,
-        };
-    
-        const seriesArray = [];
 
         // Update isFullCandleSeries ref based on the number of series
         isFullCandleSeriesRef.current = (numberOfSeriesRef.current === 5);
-
-        const totalPriceRange = maxBarRangePriceRef.current - minBarRangePriceRef.current;
 
         // Create series and set data in a single loop
         const timeStamp = cryptoData?.['crypto_data']?.[cryptoData['crypto_data'].length - 1]?.['extra_data']?.['time_stamp'] || Math.floor(Date.now() / 1000);
         
         const seriesOptionsBase = {
-            wickUpColor: isFullCandleSeriesRef.current ? 'white' : 'black',
-            wickDownColor: isFullCandleSeriesRef.current ? 'white' : 'black',
-            priceFormat: priceFormatConfig,
+            wickUpColor: 'white',
+            wickDownColor: 'white',
+            priceFormat: getPriceFormatConfig(minBarRangePriceRef.current),
         };
-
-        // Array to store the updated series data
-        const updatedData = [];
-        let cumulativeOpen = minBarRangePriceRef.current; // Start with the minimum bar range price
         
+        const updatedData = [];
+
         for (let i = 0; i < numberOfSeriesRef.current; i++) {
             const colors = isFullCandleSeriesRef.current ? cryptoData['crypto_data'][i]['colors'] : false;
-            const seriesOptions = {
-                ...seriesOptionsBase,
-                upColor: colors || 'green',
-                downColor: colors || 'red',
-            };
-        
+
             if (!chartRef.current) return;
-        
-            const series = chartRef.current.addCandlestickSeries(seriesOptions);
-        
+
+            const series = chartRef.current.addCandlestickSeries({
+                upColor: colors ||  'green',
+                downColor: colors  || 'red',
+                ...seriesOptionsBase,
+                priceLineVisible: false,
+            });
+
             let open, close, low, high;
-        
+
             if (isFullCandleSeriesRef.current) {
-                const binRange = cryptoData['crypto_data'][i]['bin_range'];
-                const rangeLow = i === 0 ? minBarRangePriceRef.current : cumulativeOpen; // Use cumulativeOpen for subsequent candles
-                const rangeHigh = binRange[1];
-        
-                // Calculate the percentage size of the candle based on its range
-                const candleSizePercentage = (rangeHigh - rangeLow) / totalPriceRange;
-        
-                // Adjust open and close based on relative size
-                open = cumulativeOpen; // Start open at the cumulative open
-                close = open + (totalPriceRange * candleSizePercentage); // Calculate close based on percentage
-        
-                // Update cumulativeOpen for the next candle
-                cumulativeOpen = close; 
+                open= low = cryptoData['crypto_data'][i]['bin_range'][0];
+                high = close = cryptoData['crypto_data'][i]['bin_range'][1];               
             } else {
-                open = close = low = high = minBarRangePriceRef.current; // All values are the same when not using full candle series
+                open = low = minBarRangePriceRef.current; 
+                high = close = maxBarRangePriceRef.current;
             }
-        
-            low = Math.min(open, close);
-            high = Math.max(open, close);
-        
-            const filterOHLCdata = { time: timeStamp, open, high, low, close };
-            const newData = [...(seriesDataRef.current[i] || []), filterOHLCdata];
-            series.setData(newData);
-            updatedData.push(newData);
+
+            const filterOHLCdata = [{ time: timeStamp, open, high, low, close }];
+            series.setData(filterOHLCdata);
+            updatedData.push(filterOHLCdata);
         }     
-            
+
         // Update the seriesData ref without triggering a re-render
         seriesDataRef.current = updatedData;
-    
-    }, [cryptoData,]); // Reduced dependency array
+
+    }, [cryptoData,]);
 
     return (
         <>
-            {/* {seriesDataRef.current.length > 0 && ( */}
-                <div ref={chartContainerRef} style={{ position: 'relative', width: '100%', height: '300px' }} />
-            {/* )} */}
+         <Grid container justifyContent="center" alignItems="center" style={{ position: 'relative', width: '100%', height: '300px' }} >
+            {seriesDataRef.current.length > 0 ? (
+                <div ref={chartContainerRef}/>
+            ) : (
+                <LoadingIndicator msg = {"Chart getting Load ...."}/>
+            )}
+        </Grid>
         </>
     );
 };
