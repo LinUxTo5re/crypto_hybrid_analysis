@@ -27,7 +27,6 @@ function AnalyticFrame({ cryptoValue }) {
   const [selectedTf, setSelectedTf] = useState(Array.from({ length: cryptoValueInt }, () => ''));
   const [isValued, setIsValued] = useState(Array.from({ length: cryptoValueInt }, () => false));
   const [isAppliedBtnClicked, setIsAppliedBtnClicked] = useState(null);
-  const [displayStatus, setDisplayStatus] = useState('none');
 
   const setStateFunctions = {
     setSelectedMarket,
@@ -71,7 +70,6 @@ function AnalyticFrame({ cryptoValue }) {
     if (result){
       setPreviousCryptoData(result);
       setIsAppliedBtnClicked(false);
-      setDisplayStatus('flex');
     }
     console.log(result);
   }
@@ -182,28 +180,20 @@ function AnalyticFrame({ cryptoValue }) {
           
             <Grid container justifyContent="center" alignItems="center" >
 
-              {isAppliedBtnClicked ? (
+              {isAppliedBtnClicked && (
                 <LoadingIndicator msg = {"Fetching Previous Crypto Data ...."}/>
-              ) : (
-             <LoadingIndicator msg = {"Welcome to TRADE ❤️"} isCircularLoadUsing= {false}/>         
-            )}
+              )}
+
+              {!isAppliedBtnClicked && previousCryptoData.length === 0 && (
+                <LoadingIndicator msg = {"Waiting for you response ....."}  isCircularLoadUsing ={false} isParentSpaceAllowed={false}/>
+              )}        
+
            </Grid>
            
-            <Grid container spacing={2} style={{display: displayStatus}}>
-              <Grid item xs={8}>
-                <Item>
-                  <StatisticalAnalysis previousCryptoData={previousCryptoData}/>
-                </Item>
-              </Grid>
+           <Grid item xs={12} >
+            <StatisticalAnalysis previousCryptoData={previousCryptoData}/>
+          </Grid>
 
-              <Grid item xs={4} sx={{ marginBottom: '20px' }}>
-                <Item>
-                  {/* <h1>
-                    <TradePossibilities />
-                  </h1> */}
-                </Item>
-              </Grid>
-            </Grid>
           </React.Fragment>
         ))}
       </Grid>

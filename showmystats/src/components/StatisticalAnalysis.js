@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@mui/material';
 import LoadingIndicator from '../static/js/LoadingIndicator';
 import * as endpoints from '../constants/endpoints';
-import { getPriceFormatConfig } from '../utils/statisticalAnalysisUtils';
 
 const StatisticalAnalysis = ({ previousCryptoData }) => {
     const chartContainerRef = useRef(null);
@@ -15,7 +14,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
     const numberOfSeriesRef = useRef(0);
     const minBarRangePriceRef = useRef(0);
     const maxBarRangePriceRef = useRef(0);
-    const isFullCandleSeriesRef = useRef(false); // Change to useRef
+    const isFullCandleSeriesRef = useRef(false); 
 
     // Create chart instance
     useEffect(() => {
@@ -23,17 +22,17 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
 
         chartRef.current = createChart(chartContainerRef.current, {
             width: chartContainerRef.current.clientWidth,
-            height: 300,
+            height: chartContainerRef.current.clientHeight,
             layout: {
-                textColor: 'black',
-                background: { type: 'solid', color: 'white' },
+                background: { type: 'solid', color: '#131722' },
+    textColor: '#d1d4dc',
             },
             timeScale: {
                 timeVisible: true,
                 secondsVisible: false,
-                barSpacing: 100,
+                barSpacing: 15,
                 rightOffset: 5,
-                minBarSpacing: 50,
+                minBarSpacing: 5,
                 ticksVisible: true,
             },
             rightPriceScale: {
@@ -45,25 +44,35 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
             },
             grid: {
                 vertLines: {
-                    color: '#D6DCDE',
+                    color: '#2B2B43',
                     style: 0,
                     visible: true,
                 },
                 horzLines: {
-                    color: 'rgba(70, 130, 180, 0.5)', 
+                    color: '#2B2B43', 
                     visible: true,
                 },
             },
         });
         
     }, []); // Chart is created only once when component mounts
-    
+
+    const market = useRef();
+    const priceFormatConfig = useRef();
+    const [isLoading, setIsLoading] = useState(null);
+
+    const handleLoader = (val) =>
+    {
+        setIsLoading(val);
+    }
     // WebSocket logic
     useEffect(() => {        
-        const market = previousCryptoData?.formData?.market;
-        if (!market) return;
+        market.current = previousCryptoData?.formData?.market;
+        priceFormatConfig.current = previousCryptoData?.priceFormatConfig;
 
-        const socket = new WebSocket(endpoints.CCCAGG_LiveTrade_WS + market);
+        if (!market.current) return;
+        handleLoader(true);
+        const socket = new WebSocket(endpoints.CCCAGG_LiveTrade_WS + market.current);
 
         socket.addEventListener('open', () => {
             console.log('WebSocket connected');
@@ -95,9 +104,9 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         });
 
         return () => {
-            socket.close(); // Close WebSocket on unmount
+            socket.close();
         };
-    }, [previousCryptoData]); // Only re-run when previousCryptoData changes
+    }, [previousCryptoData,]); // Only re-run when previousCryptoData changes
 
     // Update chart with new series data
     useEffect(() => {
@@ -112,7 +121,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         const seriesOptionsBase = {
             wickUpColor: 'white',
             wickDownColor: 'white',
-            priceFormat: getPriceFormatConfig(minBarRangePriceRef.current),
+            priceFormat: priceFormatConfig.current,
         };
         
         const updatedData = [];
@@ -127,6 +136,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
                 downColor: colors  || 'red',
                 ...seriesOptionsBase,
                 priceLineVisible: false,
+                lastValueVisible : false,
             });
 
             let open, close, low, high;
@@ -146,18 +156,22 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
 
         // Update the seriesData ref without triggering a re-render
         seriesDataRef.current = updatedData;
+        if(isLoading) handleLoader(false); // run once for every fresh market
 
-    }, [cryptoData,]);
+    }, [cryptoData]);
 
     return (
         <>
-         <Grid container justifyContent="center" alignItems="center" style={{ position: 'relative', width: '100%', height: '300px' }} >
-            {seriesDataRef.current.length > 0 ? (
-                <div ref={chartContainerRef}/>
-            ) : (
-                <LoadingIndicator msg = {"Chart getting Load ...."}/>
+       <div style={{ position: 'relative', width: '100%', height: '650px' }}>
+            <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} />
+            {isLoading && (
+                <LoadingIndicator 
+                    msg={"Previous crypto data fetched successfully, Waiting for first 5 minute candle to be complete ...."}
+                />
             )}
-        </Grid>
+        </div>
+        {/* <div ref={chartContainerRef} style={{ position: 'relative', width: '100%', height: '650px' }} /> */}
+
         </>
     );
 };

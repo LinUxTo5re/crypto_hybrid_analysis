@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as endpoints from '../constants/endpoints';
 import  cccaggAppendIndicator from './cccaggAppendIndicatorUtils';
 import { fetchLiveTrades } from './fetchLiveUtils';
+import { getPriceFormatConfig } from './statisticalAnalysisUtils';
 
 export const handleAutocompleteChange = (id, value, index, setStateFunctions) => {
     const { setSelectedMarket, setSelectedIndicators, setSelectedStrategies, setSelectedTf, setIsValued } = setStateFunctions;
@@ -50,12 +51,7 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
     };
 
     try {
-      // const response = await axios.post(endpoints.Submit_Btn_URL, formData, {
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // });
-
+      const priceFormatConfig  = await getPriceFormatConfig(market); // fetch price format
       // market-> string ('BTC')
       // tf -> string ('4h')
       // isml -> bool (true)
@@ -74,6 +70,7 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
       const previous_data = {};
 
       if (Array.isArray(response.data)){ // fetching last record
+        previous_data.priceFormatConfig = priceFormatConfig;
         previous_data.formData = formData;
         previous_data.EMA_5m = {
           EMA_9: response.data[response.data.length - 1]['EMA_9'],
@@ -81,10 +78,8 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
           EMA_50: response.data[response.data.length - 1]['EMA_50']
         };
         
-        previous_data.Last_UpdateTm = response.data[response.data.length - 1]['time'];
-        
+        previous_data.Last_UpdateTm = response.data[response.data.length - 1]['time'];     
       }
-      // Establishing connection with websocket for statistaicalAnalysis component
 
       console.log('Form data submitted successfully');
       return previous_data;

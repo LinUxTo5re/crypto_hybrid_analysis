@@ -10,6 +10,7 @@ from clthistoricaldata.logical.mlhistdata import designMLmodel
 from clthistoricaldata.logical.shortIndicators import designIndicator
 import logging
 import json
+from clthistoricaldata.helpers.apiUtils import fetchDataForPriceFormat
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('clthistoricaldata')
@@ -58,7 +59,12 @@ def submit_data(request):
         return JsonResponse({'message': 'Data received successfully!'}, status=200)
     else:
         return JsonResponse({'message': "error" }, status = 404) 
-     
+
+@api_view(['GET'])
+def fetch_precision(request):
+    market = request.GET.get('market', 'BTC')
+    return JsonResponse({"price": fetchDataForPriceFormat(market.upper())}, safe=False)
+
 """
 note: instead of calling one endpoint for all timeframe indicator creation,
 call separate endpoints for each timeframe which will enhanch performance in a way that
