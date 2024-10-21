@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const LoadingIndicator = ({ msg, isCircularLoadUsing = true, isParentSpaceAllowed = true }) => {
+const LoadingIndicator = ({ msg, isCircularLoadUsing = true, isParentSpaceAllowed = true, color= 'white' }) => {
     return (
         <Box
             position={isParentSpaceAllowed ? "absolute" : "relative"}
@@ -20,7 +20,7 @@ const LoadingIndicator = ({ msg, isCircularLoadUsing = true, isParentSpaceAllowe
                 {isCircularLoadUsing && 
                     <CircularProgress color="secondary" style={{ marginBottom: '20px' }} />
                 }
-                <Typography variant="body1" color="white">
+                <Typography variant="body1" color={color}>
                     {msg}
                 </Typography>
             </Box>

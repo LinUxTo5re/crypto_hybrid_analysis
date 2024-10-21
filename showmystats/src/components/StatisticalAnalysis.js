@@ -3,6 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@mui/material';
 import LoadingIndicator from '../static/js/LoadingIndicator';
 import * as endpoints from '../constants/endpoints';
+import Draggable from 'react-draggable';
+import '../static/css/ResizablePopup.css';
+import Fab from '@mui/material/Fab';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const StatisticalAnalysis = ({ previousCryptoData }) => {
     const chartContainerRef = useRef(null);
@@ -30,7 +34,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
             timeScale: {
                 timeVisible: true,
                 secondsVisible: false,
-                barSpacing: 15,
+                barSpacing: 50,
                 rightOffset: 5,
                 minBarSpacing: 5,
                 ticksVisible: true,
@@ -160,10 +164,59 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
 
     }, [cryptoData]);
 
+    const [visible, setVisible] = useState(false); // To toggle pop-up visibility
+    const [size, setSize] = useState({ width: 300, height: 200 }); // Initial size
+
+    // Handle resizing
+    const onResize = (e) => {
+        const newWidth = e.clientX - e.target.parentElement.getBoundingClientRect().left;
+        const newHeight = e.clientY - e.target.parentElement.getBoundingClientRect().bottom;
+        if (newWidth > 100 && newHeight > 100) { // Minimum size constraints
+            setSize({ width: newWidth, height: newHeight });
+        }
+    };
+
     return (
         <>
-       <div style={{ position: 'relative', width: '100%', height: '650px' }}>
-            <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} />
+       <div style={{ position: 'relative', width: '100%', height: '500px' }}>
+            {visible && (
+                <Draggable>
+                    <div
+                        className="resizable-popup"
+                        style={{
+                            width: size.width,
+                            height: size.height,
+                            padding: '20px',
+                            backgroundColor: 'rgba(255, 255, 255)',
+                            border: '1px solid #ccc',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                            position: 'absolute',
+                            bottom: '6%',
+                            left: '1%',
+                            zIndex: 1000,
+                        }}
+                    >
+                        <h2>your data here</h2>
+                        
+                        {/* Resize handle */}
+                        <div className="resize-handle" onMouseDown={onResize}></div>
+                    </div>
+                </Draggable>
+            )}
+            <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} >
+            <Fab 
+                color="secondary" 
+                aria-label="add" 
+                style={{
+                    position: 'fixed',
+                    bottom: 0,
+                    right: 20,
+                }}
+                onClick={() => setVisible(!visible)}
+            >
+                <ShoppingCartIcon />
+            </Fab>
+                </div>
             {isLoading && (
                 <LoadingIndicator 
                     msg={"Previous crypto data fetched successfully, Waiting for first 5 minute candle to be complete ...."}

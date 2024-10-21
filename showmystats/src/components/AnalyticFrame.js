@@ -183,11 +183,7 @@ function AnalyticFrame({ cryptoValue }) {
               {isAppliedBtnClicked && (
                 <LoadingIndicator msg = {"Fetching Previous Crypto Data ...."}/>
               )}
-
-              {!isAppliedBtnClicked && previousCryptoData.length === 0 && (
-                <LoadingIndicator msg = {"Waiting for you response ....."}  isCircularLoadUsing ={false} isParentSpaceAllowed={false}/>
-              )}        
-
+              
            </Grid>
            
            <Grid item xs={12} >
