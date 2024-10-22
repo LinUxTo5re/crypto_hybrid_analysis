@@ -33,9 +33,11 @@ class LiveIndexPriceTrackerConsumer(AsyncWebsocketConsumer):
                             if isinstance(data['result'], list):    
                                 index_price = float(data['result'][0].get('index_price', 0))
                                 last_price = float(data['result'][0].get('last', 0))
+                                change_percentage = float(data['result'][0].get('change_percentage', 0))
                                 if index_price:
                                     await self.send(text_data=json.dumps({"index_price": index_price,
-                                                                          "last_price" : last_price}))
+                                                                          "last_price" : last_price,
+                                                                          "change_percentage":change_percentage}))
                     except Exception as e:
                         logger.error(f"LiveIndexPriceTrackerConsumer's receive() raised error. \n Exception: {e}")
                         await asyncio.sleep(2)
