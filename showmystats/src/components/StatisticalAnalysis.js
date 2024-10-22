@@ -74,7 +74,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         setIsLoading(val);
     }
 
-    // Fetch index and last price from gate.io
+    // Fetch index and last price from gate.io (uses ws://127.0.0.1:8000/ws/index-price/<market>)
     useEffect(() => {
         market.current = previousCryptoData?.formData?.market;
         if (!market.current) return;
@@ -107,7 +107,8 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
             socket.close();
         };
     }, [previousCryptoData, ]);
-    // WebSocket logic
+
+    // WebSocket logic (uses ws://127.0.0.1:8000/ws/livetrades/<market>)
     useEffect(() => {        
         market.current = previousCryptoData?.formData?.market;
         priceFormatConfig.current = previousCryptoData?.priceFormatConfig;
@@ -199,8 +200,32 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         // Update the seriesData ref without triggering a re-render
         seriesDataRef.current = updatedData;
         if(isLoading) handleLoader(false); // run once for every fresh market
-
+        
     }, [cryptoData]);
+
+    // Update EMA (uses ws://127.0.0.1:8000/ws/appendindicators/)
+    useEffect(() => {
+        if (!previousCryptoData || !chartRef.current || isLoading) return;
+        if (!isLoading){
+        const emaData = previousCryptoData?.EMA_15m?.EMA_9;
+        const timestamp = previousCryptoData?.timeStamp;
+
+        if (emaData && timestamp && emaData.length === timestamp.length){
+            const mergedData = emaData.map((emaValue, index) => ({
+                value: emaValue,
+                time: timestamp[index]  
+                 }));
+
+            const emaLineSeries = chartRef.current.addLineSeries({
+                color: 'rgba(0, 0, 255, 0.5)',
+                lineWidth: 1,
+                lineType: 3, // check it tommorrow
+              });
+              emaLineSeries.setData(mergedData);
+        }
+    }
+  
+    }, [isLoading, ]);
 
     const [visible, setVisible] = useState(false); // To toggle pop-up visibility
 

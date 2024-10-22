@@ -72,11 +72,12 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
       if (Array.isArray(response.data)){ // fetching last record
         previous_data.priceFormatConfig = priceFormatConfig;
         previous_data.formData = formData;
-        previous_data.EMA_5m = {
-          EMA_9: response.data[response.data.length - 1]['EMA_9'],
-          EMA_12: response.data[response.data.length - 1]['EMA_12'],
-          EMA_50: response.data[response.data.length - 1]['EMA_50']
+        previous_data.EMA_15m = {
+          EMA_9: response.data.slice(-50).map(item => item['EMA_9']),
+          EMA_12: response.data.slice(-50).map(item => item['EMA_12']),
+          EMA_50: response.data.slice(-50).map(item => item['EMA_50'])
         };
+        previous_data.timeStamp = response.data.slice(-50).map(item => item['time']);
         
         previous_data.Last_UpdateTm = response.data[response.data.length - 1]['time'];     
       }
