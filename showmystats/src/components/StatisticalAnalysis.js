@@ -12,6 +12,8 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null); // Create a ref to store the chart instance
     const [cryptoData, setCryptoData] = useState(null);
+    const liveIndexAndLastPrice = useRef(null);
+
     
     // Create refs for the excluded state variables
     const seriesDataRef = useRef([]);
@@ -69,6 +71,44 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
     {
         setIsLoading(val);
     }
+
+    // Fetch index and last price from gate.io
+    useEffect(() => {
+        market.current = previousCryptoData?.formData?.market;
+        if (!market.current) return;
+        
+        const socket = new WebSocket(endpoints.Live_Index_Price_GateIO_WS + market.current);
+
+        socket.addEventListener('open', () => {
+            console.log('Websocket connected: Live Index price tracker')
+            socket.send(JSON.stringify({action: 'subscribd', market}));
+        });
+
+        socket.addEventListener('message', (event) => {
+            try {
+                const index_data = JSON.parse(event.data);             
+                liveIndexAndLastPrice.current = index_data;
+                // if (chartRef.current) {
+                //     chartRef.current.setPriceLine(index_data.last_price); // This method should be called on the series
+                // }
+                console.log('index data:  ', index_data);
+            } catch (error) {
+                console.error('candle series formation Error parsing WebSocket message:', error);
+            }
+        });
+
+        socket.addEventListener('error', (error) => {
+            console.error('Live Index price tracker WebSocket error:', error);
+        });
+
+        socket.addEventListener('close', (event) => {
+            console.log('Live Index price tracker WebSocket connection closed:', event);
+        });
+
+        return () => {
+            socket.close();
+        };
+    }, [previousCryptoData, ]);
     // WebSocket logic
     useEffect(() => {        
         market.current = previousCryptoData?.formData?.market;
@@ -79,7 +119,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         const socket = new WebSocket(endpoints.CCCAGG_LiveTrade_WS + market.current);
 
         socket.addEventListener('open', () => {
-            console.log('WebSocket connected');
+            console.log('WebSocket connected: candle series formation');
             socket.send(JSON.stringify({ action: 'subscribe', market }));
         });
 
@@ -95,16 +135,16 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
                 setCryptoData(crypto_data);
                 console.log('crypto data:  ', crypto_data);
             } catch (error) {
-                console.error('Error parsing WebSocket message:', error);
+                console.error('candle series formation Error parsing WebSocket message:', error);
             }
         });
 
         socket.addEventListener('error', (error) => {
-            console.error('WebSocket error:', error);
+            console.error('candle series formation WebSocket error:', error);
         });
 
         socket.addEventListener('close', (event) => {
-            console.log('WebSocket connection closed:', event);
+            console.log('candle series formation WebSocket connection closed:', event);
         });
 
         return () => {
@@ -223,7 +263,6 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
                 />
             )}
         </div>
-        {/* <div ref={chartContainerRef} style={{ position: 'relative', width: '100%', height: '650px' }} /> */}
 
         </>
     );

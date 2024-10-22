@@ -17,3 +17,6 @@ ema_tf_mapping = {
     '4h': 'EMA_4h',
     '1d': 'EMA_1d'
 }
+
+# Gate.io
+index_price_ws = 'wss://fx-ws.gateio.ws/v4/ws/usdt'
