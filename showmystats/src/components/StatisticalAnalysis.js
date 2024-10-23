@@ -23,6 +23,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
     const minBarRangePriceRef = useRef(0);
     const maxBarRangePriceRef = useRef(0);
     const isFullCandleSeriesRef = useRef(false); 
+    const priceScaleId = useRef();
 
     // Create chart instance
     useEffect(() => {
@@ -182,6 +183,8 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
                 lastValueVisible : false,
             });
 
+            // Store the price scale ID of the candlestick series
+            priceScaleId.current = series.priceScaleId;
             let open, close, low, high;
 
             if (isFullCandleSeriesRef.current) {
@@ -203,29 +206,109 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
         
     }, [cryptoData]);
 
+    const [NewEMAdataFetched, setEMAdata] = useState();
+
+    // WebSocket logic (uses ws://127.0.0.1:8000/ws/appendindicators/)
+    useEffect(() => {
+        if (!previousCryptoData || !chartRef.current) return;
+        const socket = new WebSocket(endpoints.EMA_Append_Indicator_WS);
+        
+        if (isLoading !== null){
+        socket.addEventListener('open', () => {
+            const timeframes = ['5m', '15m', '1h', '4h', '1d'];
+            const previousEMA = {
+                "ticker": market.current
+            };
+        
+            timeframes.forEach(timeframe => {
+                previousEMA[timeframe] = {
+                    "previous_EMA_9_data": previousCryptoData?.[`EMA_${timeframe}`]?.EMA_9?.slice(-1)[0],
+                    "previous_EMA_12_data": previousCryptoData?.[`EMA_${timeframe}`]?.EMA_12?.slice(-1)[0],
+                    "previous_EMA_50_data": previousCryptoData?.[`EMA_${timeframe}`]?.EMA_50?.slice(-1)[0],
+                };
+            });
+        
+            console.log('Websocket connected: appending EMA indicators');
+            socket.send(previousEMA);
+        });
+
+        socket.addEventListener('message', (event) => {
+            const EMADataNew = JSON.parse(event.data);
+            setEMAdata(EMADataNew);
+            console.log("EMA Data:  ", EMADataNew);
+        });
+        socket.addEventListener('error', (error) => {
+            console.error('Append EMA indicator error: ', error);
+        });
+
+        socket.addEventListener('close', (event) => {
+            console.log('Closed: Append  EMA indicator ', event);
+        });
+    }
+
+    },[previousCryptoData,]);
+
+    const colorsEMA = {
+        '5m': {
+          9: 'rgba(0, 128, 0, 1)', // dark green
+          12: 'rgba(0, 128, 0, 0.7)', // green
+          50: 'rgba(0, 128, 0, 0.3)' // light green
+        },
+        '15m': {
+          9: 'rgba(255, 165, 0, 1)', // dark orange
+          12: 'rgba(255, 165, 0, 0.7)', // orange
+          50: 'rgba(255, 165, 0, 0.3)' // light orange
+        },
+        '1h': {
+          9: 'rgba(128, 0, 128, 1)', // dark purple
+          12: 'rgba(128, 0, 128, 0.7)', // purple
+          50: 'rgba(128, 0, 128, 0.3)' // light purple
+        },
+        '4h': {
+          9: 'rgba(0, 0, 255, 1)', // dark blue
+          12: 'rgba(0, 0, 255, 0.7)', // blue
+          50: 'rgba(0, 0, 255, 0.3)' // light blue
+        },
+        '1d': {
+          9: 'rgba(255, 0, 0, 1)', // dark red
+          12: 'rgba(255, 0, 0, 0.7)', // red
+          50: 'rgba(255, 0, 0, 0.3)' // light red
+        }
+      };
     // Update EMA (uses ws://127.0.0.1:8000/ws/appendindicators/)
     useEffect(() => {
-        if (!previousCryptoData || !chartRef.current || isLoading) return;
-        if (!isLoading){
-        const emaData = previousCryptoData?.EMA_15m?.EMA_9;
-        const timestamp = previousCryptoData?.timeStamp;
+        if (!previousCryptoData && isLoading !== null && previousCryptoData.length === 0) return;
 
-        if (emaData && timestamp && emaData.length === timestamp.length){
-            const mergedData = emaData.map((emaValue, index) => ({
-                value: emaValue,
-                time: timestamp[index]  
-                 }));
+            const timestamp = isLoading ? previousCryptoData?.EMA_timeStamp : NewEMAdataFetched?.timeStamp;
 
-            const emaLineSeries = chartRef.current.addLineSeries({
-                color: 'rgba(0, 0, 255, 0.5)',
-                lineWidth: 1,
-                lineType: 3, // check it tommorrow
-              });
-              emaLineSeries.setData(mergedData);
-        }
-    }
+            const timeframes = ['5m', '15m', '1h', '4h', '1d'];
+            const emaPeriods = [9, 12, 50];
+            
+            const addEmaLineSeries = (emaData, timeframe, period) => {
+                if (emaData && timestamp && emaData.length === timestamp.length) {
+                    const mergedData = emaData.map((emaValue, index) => ({
+                        value: emaValue,
+                        time: isLoading ? timestamp[index]: timestamp,
+                    }));
+            
+                    chartRef.current.addLineSeries({
+                        color: colorsEMA[timeframe][period],
+                        lineWidth: 1,
+                        priceScaleId: priceScaleId.current,
+                    }).setData(mergedData);
+                }
+            };
+            
+            if (isLoading !== null){
+                timeframes.forEach((timeframe) => {
+                    emaPeriods.forEach((period) => {
+                        const emaData = isLoading ? previousCryptoData : NewEMAdataFetched[timeframe]?.[`ema_${period}`];
+                        addEmaLineSeries(emaData, timeframe, period);
+                    });
+                });
+            }
   
-    }, [isLoading, ]);
+    }, [ NewEMAdataFetched, previousCryptoData]);
 
     const [visible, setVisible] = useState(false); // To toggle pop-up visibility
 

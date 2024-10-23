@@ -11,3 +11,5 @@ export const Fetch_HistData_URL = 'http://localhost:8000/histdata';
 export const Price_Format_GateIO_URL = 'http://localhost:8000/api/priceformat';
 
 export const Live_Index_Price_GateIO_WS = 'ws://localhost:8000/ws/index-price/';
+
+export const EMA_Append_Indicator_WS = 'ws://localhost:8000/ws/appendindicators/';

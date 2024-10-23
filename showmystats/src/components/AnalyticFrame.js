@@ -71,7 +71,6 @@ function AnalyticFrame({ cryptoValue }) {
       setPreviousCryptoData(result);
       setIsAppliedBtnClicked(false);
     }
-    console.log(result);
   }
 
   const boxArray = Array.from({ length: cryptoValueInt }, (_, index) => index);
