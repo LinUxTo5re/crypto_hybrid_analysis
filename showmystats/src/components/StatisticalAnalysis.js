@@ -8,7 +8,7 @@ import Fab from '@mui/material/Fab';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TradePossibilitiesCart from '../static/js/TradePossibilitiesCart';
 import LiveIndexPriceTracker from '../static/js/LiveIndexPriceTracker';
-
+import NestedCheckboxes from '../static/js/NestedCheckboxes';
 
 const StatisticalAnalysis = ({ previousCryptoData }) => {
     const chartContainerRef = useRef(null);
@@ -210,10 +210,10 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
 
     // WebSocket logic (uses ws://127.0.0.1:8000/ws/appendindicators/)
     useEffect(() => {
-        if (!previousCryptoData || !chartRef.current) return;
-        const socket = new WebSocket(endpoints.EMA_Append_Indicator_WS);
+        if (!chartRef.current && previousCryptoData.length === 0) return;
         
-        if (isLoading !== null){
+        if (market.current){
+        const socket = new WebSocket(endpoints.EMA_Append_Indicator_WS);
         socket.addEventListener('open', () => {
             const timeframes = ['5m', '15m', '1h', '4h', '1d'];
             const previousEMA = {
@@ -277,33 +277,41 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
       };
     // Update EMA (uses ws://127.0.0.1:8000/ws/appendindicators/)
     useEffect(() => {
-        if (!previousCryptoData && isLoading !== null && previousCryptoData.length === 0) return;
-
-            const timestamp = isLoading ? previousCryptoData?.EMA_timeStamp : NewEMAdataFetched?.timeStamp;
-
+        if (isLoading == null && previousCryptoData.length === 0) return;
             const timeframes = ['5m', '15m', '1h', '4h', '1d'];
             const emaPeriods = [9, 12, 50];
             
-            const addEmaLineSeries = (emaData, timeframe, period) => {
-                if (emaData && timestamp && emaData.length === timestamp.length) {
+            const addEmaLineSeries = (emaData,timestamp, timeframe, period) => {
+                if (emaData && timestamp) {
                     const mergedData = emaData.map((emaValue, index) => ({
                         value: emaValue,
-                        time: isLoading ? timestamp[index]: timestamp,
+                        time: !isLoading && isLoading !== null? timestamp: timestamp[index],
                     }));
             
                     chartRef.current.addLineSeries({
                         color: colorsEMA[timeframe][period],
                         lineWidth: 1,
                         priceScaleId: priceScaleId.current,
+                        priceLineVisible: false,
+                        priceFormat: priceFormatConfig.current,
+                        visible: true,
                     }).setData(mergedData);
+                    console.log("line data: ", mergedData);
                 }
             };
             
-            if (isLoading !== null){
+            if (market.current && chartRef.current){
                 timeframes.forEach((timeframe) => {
                     emaPeriods.forEach((period) => {
-                        const emaData = isLoading ? previousCryptoData : NewEMAdataFetched[timeframe]?.[`ema_${period}`];
-                        addEmaLineSeries(emaData, timeframe, period);
+                        let emaData, timestamp;
+                        if(!isLoading && isLoading !== null){
+                            emaData =  NewEMAdataFetched[timeframe]?.['ema_'+period];
+                            timestamp = NewEMAdataFetched?.timeStamp;       
+                        }else{
+                            emaData =  previousCryptoData['EMA_'+ timeframe]?.['EMA_' + period.toString()] ;
+                            timestamp = previousCryptoData['EMA_'+ timeframe]?.EMA_timeStamp;             
+                        }
+                        addEmaLineSeries(emaData, timestamp, timeframe, period);
                     });
                 });
             }
@@ -314,40 +322,41 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
 
     return (
         <>
-       <div style={{ position: 'relative', width: '100%', height: '500px' }}>
+        <div style={{ position: 'relative', width: '100%', height: '500px' }}>
             {visible && (
-               <TradePossibilitiesCart/>
+                <TradePossibilitiesCart />
             )}
-            <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} >
-            <LiveIndexPriceTracker liveIndexAndLastPrice = {liveIndexAndLastPrice}
-            style={{
-                position: 'fixed',
-                bottom: 50,
-                right: 20,
-            }}
-            />
-
-            <Fab 
-                color="secondary" 
-                aria-label="add" 
-                style={{
-                    position: 'fixed',
-                    bottom: 0,
-                    right: 20,
-                }}
-                onClick={() => setVisible(!visible)}
-            >
-                <ShoppingCartIcon />
-            </Fab>
-                </div>
+            <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }}>
+                <LiveIndexPriceTracker 
+                    liveIndexAndLastPrice={liveIndexAndLastPrice}
+                    style={{
+                        position: 'fixed',
+                        bottom: 50,
+                        right: 20,
+                    }}
+                />
+                <Fab 
+                    color="secondary" 
+                    aria-label="add" 
+                    style={{
+                        position: 'fixed',
+                        bottom: 0,
+                        right: 20,
+                    }}
+                    onClick={() => setVisible(!visible)}
+                >
+                    <ShoppingCartIcon />
+                </Fab>
+                <NestedCheckboxes  />
+    
+            </div>
             {isLoading && (
                 <LoadingIndicator 
                     msg={"Previous crypto data fetched successfully, Waiting for first 5 minute candle to be complete ...."}
                 />
             )}
         </div>
-
-        </>
+    </>
     );
 };
 
