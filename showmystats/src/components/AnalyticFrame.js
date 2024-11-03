@@ -7,7 +7,13 @@ import '../static/css/styles.css';
 import * as vj from '../constants/variables';
 import { handleAutocompleteChange, initiateDataFetching} from '../utils/analyticframeUtils';
 import LoadingIndicator from '../static/js/LoadingIndicator';
-
+import Fab from '@mui/material/Fab';
+import TradePossibilitiesCart from '../static/js/TradePossibilitiesCart';
+import Tooltip from '@mui/material/Tooltip';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import ConstructionIcon from '@mui/icons-material/Construction';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import ISCollection from '../static/js/ISCollection';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -22,17 +28,11 @@ function AnalyticFrame({ cryptoValue }) {
   const [checked, setChecked] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState('');
   const [marketValue, setMarketValue] = useState('');
-  const [selectedIndicators, setSelectedIndicators] = useState(Array.from({ length: cryptoValueInt }, () => []));
-  const [selectedStrategies, setSelectedStrategies] = useState(Array.from({ length: cryptoValueInt }, () => []));
-  const [selectedTf, setSelectedTf] = useState(Array.from({ length: cryptoValueInt }, () => ''));
   const [isValued, setIsValued] = useState(Array.from({ length: cryptoValueInt }, () => false));
   const [isAppliedBtnClicked, setIsAppliedBtnClicked] = useState(null);
 
   const setStateFunctions = {
     setSelectedMarket,
-    setSelectedIndicators,
-    setSelectedStrategies,
-    setSelectedTf,
     setIsValued
   };
 
@@ -47,7 +47,6 @@ function AnalyticFrame({ cryptoValue }) {
     });
   };
   
-
   const handleSwitchChange = (event) => {
     setChecked(event.target.checked);
     setMarketValue("");
@@ -59,8 +58,8 @@ function AnalyticFrame({ cryptoValue }) {
     });
   };
 
+  const [changeInISCollection, setChangeInISCollection] = useState(null);
   const [previousCryptoData, setPreviousCryptoData] = useState([]);
-
 
   const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
     setIsAppliedBtnClicked(true);
@@ -74,6 +73,9 @@ function AnalyticFrame({ cryptoValue }) {
   }
 
   const boxArray = Array.from({ length: cryptoValueInt }, (_, index) => index);
+  const [checklistVisible, setchecklistVisible] = useState(false); // To toggle pop-up visibility
+  const [addStrategyVisible,  setAddStrategyVisible] = useState(false); // To toggle pop-up visibility
+  const [addIndicators,  setAddIndicators] = useState(false); // To toggle pop-up visibility
 
   return (
     <Box sx={{ flexGrow: 1, backgroundColor: '#D3CFD1' }}>
@@ -120,59 +122,77 @@ function AnalyticFrame({ cryptoValue }) {
                       required
                     />
                   )}
-                  <Autocomplete
-                    disablePortal
-                    id={`combo-box-tf-${index}`}
-                    options={vj.timeFrames}
-                    value={selectedTf[index]}
-                    sx={{ width: 300, margin: '0 80px 0 10px' }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="time-frame" />
-                    )}
-                    onChange={(event, value) =>
-                      handleAutocompleteChange('tf', value, index, setStateFunctions)
-                    }
-                    disabled
-                  />
-
-                  <Autocomplete
-                    disablePortal
-                    id={`combo-box-indicator-${index}`}
-                    options={vj.indicators}
-                    value={selectedIndicators[index]}
-                    sx={{ width: 300, margin: '0 10px' }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="indicators" />
-                    )}
-                    onChange={(event, value) =>
-                      handleAutocompleteChange('indicators', value, index, setStateFunctions)
-                    }
-                    multiple
-                  />
-                  <Autocomplete
-                    disablePortal
-                    id={`combo-box-strategy-${index}`}
-                    options={vj.strategies}
-                    value={selectedStrategies[index]}
-                    sx={{ width: 300, margin: '0 10px' }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="strategies" />
-                    )}
-                    onChange={(event, value) =>
-                      handleAutocompleteChange('strategies', value, index, setStateFunctions)
-                    }
-                    multiple
-                  />
-
+                  
                   <Button
                     color="secondary"
                     variant="contained"
                     disabled={!isValued[index]}
                     endIcon={<SendIcon />}
-                    onClick={() => handleApplyButtonClick(selectedMarket?selectedMarket:marketValue, selectedTf, selectedIndicators, selectedStrategies)}
+                    onClick={() => handleApplyButtonClick(selectedMarket?selectedMarket:marketValue)}
                   >
-                    Apply
+                    Fetch
                   </Button>
+
+                  {checklistVisible && (
+                <TradePossibilitiesCart />
+                )}
+
+                {addIndicators && (
+                  <ISCollection type={'I'} ISchange = {setChangeInISCollection}/>
+                )}
+
+                {addStrategyVisible && (
+                  <ISCollection type={'S'} ISchange = {setChangeInISCollection}/>
+                )}
+            {/* previousCryptoData.length > 0 */}
+                  {true && (
+                    <>
+                    <Tooltip title="Indicators" arrow>
+    <Fab
+        color="secondary" 
+        aria-label="add" 
+        style={{
+            position: 'relative',
+            margin: 'auto',
+        }}
+        onClick={() => setAddIndicators(!addIndicators)}
+    >
+        <ConstructionIcon />
+    </Fab>
+</Tooltip>
+
+<Tooltip title="Add Strategy">
+                     <Fab 
+                         color="secondary" 
+                         aria-label="add" 
+                         style={{
+                             position: 'relative',
+                             margin: 'auto',
+                         }}
+                         disabled
+                         onClick={() => setAddStrategyVisible(!addStrategyVisible)}
+                     >
+                         <AddBoxIcon />
+                     </Fab>
+                     </Tooltip>
+
+
+<Tooltip title="Trade Possibilities">
+                     <Fab 
+                         color="secondary" 
+                         aria-label="add" 
+                         style={{
+                             position: 'relative',
+                             margin: 'auto',
+                         }}
+                         onClick={() => setchecklistVisible(!checklistVisible)}
+                     >
+                         <ChecklistIcon />
+                     </Fab>
+                     </Tooltip>
+                    </>
+                    
+                  )};
                 </div>
               </Item>
             </Grid>
@@ -186,7 +206,8 @@ function AnalyticFrame({ cryptoValue }) {
            </Grid>
            
            <Grid item xs={12} >
-            <StatisticalAnalysis previousCryptoData={previousCryptoData}/>
+            <StatisticalAnalysis previousCryptoData={previousCryptoData}
+            changeInISCollection = {changeInISCollection}/>
           </Grid>
 
           </React.Fragment>

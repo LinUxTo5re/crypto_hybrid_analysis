@@ -1,11 +1,9 @@
 import axios from 'axios';
 import * as endpoints from '../constants/endpoints';
-import  cccaggAppendIndicator from './cccaggAppendIndicatorUtils';
-import { fetchLiveTrades } from './fetchLiveUtils';
 import { getPriceFormatConfig } from './statisticalAnalysisUtils';
 
 export const handleAutocompleteChange = (id, value, index, setStateFunctions) => {
-    const { setSelectedMarket, setSelectedIndicators, setSelectedStrategies, setSelectedTf, setIsValued } = setStateFunctions;
+    const { setSelectedMarket, setIsValued } = setStateFunctions;
   
     const updateState = (setState) => {
       setState((prevState) => {
@@ -23,15 +21,6 @@ export const handleAutocompleteChange = (id, value, index, setStateFunctions) =>
           newState[index] = value ? value.length > 0 : false;
           return newState;
         });
-        break;
-      case 'indicators':
-        updateState(setSelectedIndicators);
-        break;
-      case 'strategies':
-        updateState(setSelectedStrategies);
-        break;
-      case 'tf':
-        updateState(setSelectedTf);
         break;
       default:
         break;

@@ -6,3 +6,7 @@
     "LASTVOLUME": 11959917, // base currency quantities (use as volume on showmystats)
     "LASTVOLUMETO": 207.612199203, // quote currency (LASTVOLUME * PRICE)
 }
+
+check setemadata -> json data and fix
+.applyoptions from nesteemachecboxes not working oftenally -. fixed working now--recheck once
+pricescaleid not working as expected -. fix

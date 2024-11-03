@@ -1,16 +1,11 @@
 import { createChart } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
-import { Grid } from '@mui/material';
 import LoadingIndicator from '../static/js/LoadingIndicator';
 import * as endpoints from '../constants/endpoints';
 import '../static/css/ResizablePopup.css';
-import Fab from '@mui/material/Fab';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import TradePossibilitiesCart from '../static/js/TradePossibilitiesCart';
 import LiveIndexPriceTracker from '../static/js/LiveIndexPriceTracker';
-import NestedCheckboxes from '../static/js/NestedCheckboxes';
 
-const StatisticalAnalysis = ({ previousCryptoData }) => {
+const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null); // Create a ref to store the chart instance
     const [cryptoData, setCryptoData] = useState(null);
@@ -275,57 +270,95 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
           50: 'rgba(255, 0, 0, 0.3)' // light red
         }
       };
+
+    const lineSeriesRef = useRef({}); // Store line series references
+    const timeframes = ['5m', '15m', '1h', '4h', '1d'];
+    const emaPeriods = [9, 12, 50];
+
     // Update EMA (uses ws://127.0.0.1:8000/ws/appendindicators/)
     useEffect(() => {
         if (isLoading == null && previousCryptoData.length === 0) return;
-            const timeframes = ['5m', '15m', '1h', '4h', '1d'];
-            const emaPeriods = [9, 12, 50];
-            
-            const addEmaLineSeries = (emaData,timestamp, timeframe, period) => {
-                if (emaData && timestamp) {
-                    const mergedData = emaData.map((emaValue, index) => ({
-                        value: emaValue,
-                        time: !isLoading && isLoading !== null? timestamp: timestamp[index],
-                    }));
-            
-                    chartRef.current.addLineSeries({
+        
+        const addEmaLineSeries = (emaData, timestamp, timeframe, period) => {
+            if (emaData && timestamp) {
+                const mergedData = emaData.map((emaValue, index) => ({
+                    value: emaValue,
+                    time: !isLoading && isLoading !== null ? timestamp : timestamp[index],
+                }));
+    
+                const lineSeriesKey = `${timeframe}_${period}`;
+                
+                // Check if the line series already exists
+                if (!lineSeriesRef.current[lineSeriesKey]) {
+                    // Create a new line series and store its reference
+                    lineSeriesRef.current[lineSeriesKey] = chartRef.current.addLineSeries({
                         color: colorsEMA[timeframe][period],
                         lineWidth: 1,
                         priceScaleId: priceScaleId.current,
                         priceLineVisible: false,
                         priceFormat: priceFormatConfig.current,
-                        visible: true,
-                    }).setData(mergedData);
-                    console.log("line data: ", mergedData);
+                        visible: false, // Initial visibility
+                    });
                 }
-            };
+                
+                lineSeriesRef.current[lineSeriesKey].setData(mergedData);
+            }
+        };
+        
+        if (market.current && chartRef.current) {
+            timeframes.forEach((timeframe) => {
+                emaPeriods.forEach((period) => {
+                    let emaData, timestamp;
+                    if (!isLoading && isLoading !== null) {
+                        emaData = NewEMAdataFetched[timeframe]?.['ema_' + period];
+                        timestamp = NewEMAdataFetched?.timeStamp;
+                    } else {
+                        emaData = previousCryptoData['EMA_' + timeframe]?.['EMA_' + period.toString()];
+                        timestamp = previousCryptoData['EMA_' + timeframe]?.EMA_timeStamp;
+                    }
+                    addEmaLineSeries(emaData, timestamp, timeframe, period);
+                });
+            });
+        }
+    }, [NewEMAdataFetched, previousCryptoData]);
+    
+    // handle EMA (hide/show) based on `changeInISCollection`
+    useEffect(() => {
+        const suffixMapping = {
+            '5m': '5min',
+            '15m': '15min',
+            '1h': '1hour',
+            '4h': '4hour',
+            '1d': '1day',
+        };
+
+        if (changeInISCollection && Object.keys(lineSeriesRef.current).length > 0) {
+            const allFalse = Object.values(changeInISCollection).every(value => value === false);
             
-            if (market.current && chartRef.current){
+            if (allFalse) {
+                Object.values(lineSeriesRef.current).forEach((series) => {
+                    series?.applyOptions({ visible: false });
+                });
+            } else {
                 timeframes.forEach((timeframe) => {
                     emaPeriods.forEach((period) => {
-                        let emaData, timestamp;
-                        if(!isLoading && isLoading !== null){
-                            emaData =  NewEMAdataFetched[timeframe]?.['ema_'+period];
-                            timestamp = NewEMAdataFetched?.timeStamp;       
-                        }else{
-                            emaData =  previousCryptoData['EMA_'+ timeframe]?.['EMA_' + period.toString()] ;
-                            timestamp = previousCryptoData['EMA_'+ timeframe]?.EMA_timeStamp;             
-                        }
-                        addEmaLineSeries(emaData, timestamp, timeframe, period);
+                        const suffix = suffixMapping[timeframe];
+                        const createKey = `ema${suffix}_${period}`;
+                        const lineSeriesKey = `${timeframe}_${period}`;
+                        const series = lineSeriesRef.current[lineSeriesKey];
+                        const shouldBeVisible = changeInISCollection[createKey];
+        
+                        series?.applyOptions({ visible: shouldBeVisible });
                     });
                 });
             }
-  
-    }, [ NewEMAdataFetched, previousCryptoData]);
-
-    const [visible, setVisible] = useState(false); // To toggle pop-up visibility
+        }      
+    }, [changeInISCollection]);
 
     return (
         <>
         <div style={{ position: 'relative', width: '100%', height: '500px' }}>
-            {visible && (
-                <TradePossibilitiesCart />
-            )}
+
             <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }}>
                 <LiveIndexPriceTracker 
                     liveIndexAndLastPrice={liveIndexAndLastPrice}
@@ -335,20 +368,7 @@ const StatisticalAnalysis = ({ previousCryptoData }) => {
                         right: 20,
                     }}
                 />
-                <Fab 
-                    color="secondary" 
-                    aria-label="add" 
-                    style={{
-                        position: 'fixed',
-                        bottom: 0,
-                        right: 20,
-                    }}
-                    onClick={() => setVisible(!visible)}
-                >
-                    <ShoppingCartIcon />
-                </Fab>
-                <NestedCheckboxes  />
-    
+               
             </div>
             {isLoading && (
                 <LoadingIndicator 
