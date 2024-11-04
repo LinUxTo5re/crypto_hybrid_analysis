@@ -6,6 +6,7 @@ import {
   Typography,
   FormGroup,
   Box,
+  Tooltip,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -109,6 +110,7 @@ const NestedEMACheckboxes = ({ISchange}) => {
     }));
   };
 
+
   return (
     <>
       <Box
@@ -122,9 +124,11 @@ const NestedEMACheckboxes = ({ISchange}) => {
           zIndex: 1000,
         }}
       >
-        <Typography variant="h6" style={labelStyle}>
-          EMA
-        </Typography>
+        <Tooltip title="weighted_close_price = (data['high'] + data['low'] + 2 * data['close']) / 4" arrow>
+          <Typography variant="h6" style={labelStyle}>
+            EMA
+          </Typography>
+        </Tooltip>
         {expanded ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
       </Box>
 

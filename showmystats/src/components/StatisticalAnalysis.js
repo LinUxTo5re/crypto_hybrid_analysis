@@ -1,9 +1,10 @@
 import { createChart } from 'lightweight-charts';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import LoadingIndicator from '../static/js/LoadingIndicator';
 import * as endpoints from '../constants/endpoints';
 import '../static/css/ResizablePopup.css';
 import LiveIndexPriceTracker from '../static/js/LiveIndexPriceTracker';
+import { HandleDataContext } from './AnalyticFrame';
 
 const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
     const chartContainerRef = useRef(null);
@@ -68,6 +69,7 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
     const handleLoader = (val) =>
     {
         setIsLoading(val);
+        if(val === false) handleFabEnabled(true);
     }
 
     // Fetch index and last price from gate.io (uses ws://127.0.0.1:8000/ws/index-price/<market>)
@@ -354,6 +356,9 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
             }
         }      
     }, [changeInISCollection]);
+
+    //Context API
+    const { isFabEnabled, handleFabEnabled } = useContext(HandleDataContext);
 
     return (
         <>

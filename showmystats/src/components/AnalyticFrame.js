@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { Grid, Box, Paper, Autocomplete, TextField, Button, Switch, FormControlLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
@@ -21,6 +21,9 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
+
+//Context API
+const HandleDataContext = createContext();
 
 function AnalyticFrame({ cryptoValue }) {
 
@@ -63,12 +66,18 @@ function AnalyticFrame({ cryptoValue }) {
 
   const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
     setIsAppliedBtnClicked(true);
+    setIsFabEnabled(false);
     console.log("Apply btn clicked, starting fetching relevant crypto data");
     const result = await initiateDataFetching(market, selectedTf, selectedIndicators, selectedStrategies); 
 
     if (result){
       setPreviousCryptoData(result);
       setIsAppliedBtnClicked(false);
+      setIsValued((prevState) =>{
+        const newState = [...prevState];
+        newState[0] = false;
+        return newState;
+      });
     }
   }
 
@@ -77,7 +86,12 @@ function AnalyticFrame({ cryptoValue }) {
   const [addStrategyVisible,  setAddStrategyVisible] = useState(false); // To toggle pop-up visibility
   const [addIndicators,  setAddIndicators] = useState(false); // To toggle pop-up visibility
 
+  //Context API
+  const [isFabEnabled, setIsFabEnabled] = useState(false);
+  const handleFabEnabled = () => setIsFabEnabled((prev) => !prev);
+
   return (
+    <HandleDataContext.Provider value={{ isFabEnabled , handleFabEnabled}}>
     <Box sx={{ flexGrow: 1, backgroundColor: '#D3CFD1' }}>
       <Grid container spacing={2}>
         {boxArray.map((index) => (
@@ -92,6 +106,7 @@ function AnalyticFrame({ cryptoValue }) {
                         onChange={handleSwitchChange}
                         inputProps={{ 'aria-label': 'controlled' }}
                         color="secondary"
+                        disabled={!isValued[index]}
                       />
                     }
                     label="custom market: "
@@ -106,7 +121,10 @@ function AnalyticFrame({ cryptoValue }) {
                       value={selectedMarket}
                       sx={{ width: 300, margin: '0 10px' }}
                       renderInput={(params) => (
-                        <TextField {...params} label="Markets" required />
+                        <TextField {...params} label="Markets"
+                         required
+                         disabled={!isValued[index]}
+                         />
                       )}
                       onChange={(event, value) => {
                         handleAutocompleteChange('markets', value, 0, setStateFunctions);
@@ -120,6 +138,7 @@ function AnalyticFrame({ cryptoValue }) {
                       sx={{ width: 300, margin: '0 10px' }}
                       inputProps={{ maxLength: 6 }}
                       required
+                      disabled={!isValued[index]}
                     />
                   )}
                   
@@ -144,8 +163,7 @@ function AnalyticFrame({ cryptoValue }) {
                 {addStrategyVisible && (
                   <ISCollection type={'S'} ISchange = {setChangeInISCollection}/>
                 )}
-            {/* previousCryptoData.length > 0 */}
-                  {true && (
+
                     <>
                     <Tooltip title="Indicators" arrow>
     <Fab
@@ -156,6 +174,7 @@ function AnalyticFrame({ cryptoValue }) {
             margin: 'auto',
         }}
         onClick={() => setAddIndicators(!addIndicators)}
+        disabled = { !isFabEnabled }
     >
         <ConstructionIcon />
     </Fab>
@@ -186,13 +205,14 @@ function AnalyticFrame({ cryptoValue }) {
                              margin: 'auto',
                          }}
                          onClick={() => setchecklistVisible(!checklistVisible)}
+                         disabled= { !isFabEnabled }
                      >
                          <ChecklistIcon />
                      </Fab>
                      </Tooltip>
                     </>
                     
-                  )};
+                  
                 </div>
               </Item>
             </Grid>
@@ -214,7 +234,9 @@ function AnalyticFrame({ cryptoValue }) {
         ))}
       </Grid>
     </Box>
+    </HandleDataContext.Provider>
   );
 }
 
+export {HandleDataContext};
 export default AnalyticFrame;

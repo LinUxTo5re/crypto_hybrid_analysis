@@ -8,5 +8,5 @@
 }
 
 check setemadata -> json data and fix
-.applyoptions from nesteemachecboxes not working oftenally -. fixed working now--recheck once
 pricescaleid not working as expected -. fix
+highlight last/index price on price-scale
