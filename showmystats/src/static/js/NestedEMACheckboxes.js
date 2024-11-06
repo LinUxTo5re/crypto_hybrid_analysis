@@ -172,6 +172,7 @@ const NestedEMACheckboxes = ({ISchange}) => {
                         onChange={() => handleParentCheckboxChange(interval)}
                         sx={commonCheckboxStyles}
                         size="small"
+                        disabled={interval === 'ema1day'}
                       />
                     }
                     label={<span style={labelStyle}>{interval.replace('ema', '')}</span>}
