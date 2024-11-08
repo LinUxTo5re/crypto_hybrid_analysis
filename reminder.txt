@@ -7,6 +7,4 @@
     "LASTVOLUMETO": 207.612199203, // quote currency (LASTVOLUME * PRICE)
 }
 
-check setemadata -> json data and fix
 pricescaleid not working as expected -. fix
-highlight last/index price on price-scale

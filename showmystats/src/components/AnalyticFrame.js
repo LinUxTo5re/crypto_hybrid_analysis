@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState} from 'react';
 import { Grid, Box, Paper, Autocomplete, TextField, Button, Switch, FormControlLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
@@ -14,6 +14,7 @@ import ChecklistIcon from '@mui/icons-material/Checklist';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import ISCollection from '../static/js/ISCollection';
+import { useHandleData } from '../utils/HandleDataContext';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -22,10 +23,12 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-//Context API
-const HandleDataContext = createContext();
-
 function AnalyticFrame({ cryptoValue }) {
+  // Use Context API
+  const { isFabEnabled, handleFabEnabled, 
+    changeInISCollection, updateChangeInISCollection 
+  } = useHandleData();
+
 
   const cryptoValueInt = parseInt(cryptoValue);
   const [checked, setChecked] = useState(false);
@@ -61,12 +64,11 @@ function AnalyticFrame({ cryptoValue }) {
     });
   };
 
-  const [changeInISCollection, setChangeInISCollection] = useState(null);
   const [previousCryptoData, setPreviousCryptoData] = useState([]);
 
   const handleApplyButtonClick = async(market, selectedTf, selectedIndicators, selectedStrategies) => {
     setIsAppliedBtnClicked(true);
-    setIsFabEnabled(false);
+    handleFabEnabled(false);
     console.log("Apply btn clicked, starting fetching relevant crypto data");
     const result = await initiateDataFetching(market, selectedTf, selectedIndicators, selectedStrategies); 
 
@@ -86,12 +88,23 @@ function AnalyticFrame({ cryptoValue }) {
   const [addStrategyVisible,  setAddStrategyVisible] = useState(false); // To toggle pop-up visibility
   const [addIndicators,  setAddIndicators] = useState(false); // To toggle pop-up visibility
 
-  //Context API
-  const [isFabEnabled, setIsFabEnabled] = useState(false);
-  const handleFabEnabled = () => setIsFabEnabled((prev) => !prev);
+  const handleFAB= (FAB) => {
+    switch(FAB){
+      case 'Indicator':
+        setAddIndicators((prev) => !prev);
+        break;
+      case 'Strategy':
+        setAddStrategyVisible((prev) => !prev);
+        break;
+      case 'CheckList':
+        setchecklistVisible((prev) => !prev);
+        break;
+      default:
+        break;
+    }
 
+  };
   return (
-    <HandleDataContext.Provider value={{ isFabEnabled , handleFabEnabled}}>
     <Box sx={{ flexGrow: 1, backgroundColor: '#D3CFD1' }}>
       <Grid container spacing={2}>
         {boxArray.map((index) => (
@@ -154,61 +167,59 @@ function AnalyticFrame({ cryptoValue }) {
                 )}
 
                 {addIndicators && (
-                  <ISCollection type={'I'} ISchange = {setChangeInISCollection}/>
+                  <ISCollection type={'I'}/>
                 )}
 
                 {addStrategyVisible && (
-                  <ISCollection type={'S'} ISchange = {setChangeInISCollection}/>
+                  <ISCollection type={'S'}/>
                 )}
 
                     <>
-                    <Tooltip title="Indicators" arrow>
-    <Fab
-        color="secondary" 
-        aria-label="add" 
-        style={{
-            position: 'relative',
-            margin: 'auto',
-        }}
-        onClick={() => setAddIndicators(!addIndicators)}
-        disabled = { !isFabEnabled }
-    >
-        <ConstructionIcon />
-    </Fab>
-</Tooltip>
+                        <Tooltip title="Indicators" arrow>
+                                <Fab
+                                    color="secondary" 
+                                    aria-label="add" 
+                                    style={{
+                                        position: 'relative',
+                                        margin: 'auto',
+                                    }}
+                                    onClick={() => handleFAB('Indicator')}
+                                    disabled = { !isFabEnabled }
+                                >
+                                    <ConstructionIcon />
+                                </Fab>
+                        </Tooltip>
 
-<Tooltip title="Add Strategy">
-                     <Fab 
-                         color="secondary" 
-                         aria-label="add" 
-                         style={{
-                             position: 'relative',
-                             margin: 'auto',
-                         }}
-                         disabled
-                         onClick={() => setAddStrategyVisible(!addStrategyVisible)}
-                     >
-                         <AddBoxIcon />
-                     </Fab>
-                     </Tooltip>
+                        <Tooltip title="Add Strategy">
+                                            <Fab 
+                                                color="secondary" 
+                                                aria-label="add" 
+                                                style={{
+                                                    position: 'relative',
+                                                    margin: 'auto',
+                                                }}
+                                                disabled
+                                                onClick={() => handleFAB('Strategy')}
+                                            >
+                                                <AddBoxIcon />
+                                            </Fab>
+                        </Tooltip>
 
-
-<Tooltip title="Trade Possibilities">
-                     <Fab 
-                         color="secondary" 
-                         aria-label="add" 
-                         style={{
-                             position: 'relative',
-                             margin: 'auto',
-                         }}
-                         onClick={() => setchecklistVisible(!checklistVisible)}
-                         disabled= { !isFabEnabled }
-                     >
+                        <Tooltip title="Trade Possibilities">
+                                            <Fab 
+                                                color="secondary" 
+                                                aria-label="add" 
+                                                style={{
+                                                    position: 'relative',
+                                                    margin: 'auto',
+                                                }}
+                                                onClick={() => handleFAB('CheckList')}
+                                                disabled= { !isFabEnabled }
+                                            >
                          <ChecklistIcon />
                      </Fab>
-                     </Tooltip>
-                    </>
-                    
+                        </Tooltip>
+                    </>                
                   
                 </div>
               </Item>
@@ -223,17 +234,14 @@ function AnalyticFrame({ cryptoValue }) {
            </Grid>
            
            <Grid item xs={12} >
-            <StatisticalAnalysis previousCryptoData={previousCryptoData}
-            changeInISCollection = {changeInISCollection}/>
+            <StatisticalAnalysis previousCryptoData={previousCryptoData}/>
           </Grid>
 
           </React.Fragment>
         ))}
       </Grid>
     </Box>
-    </HandleDataContext.Provider>
   );
 }
 
-export {HandleDataContext};
 export default AnalyticFrame;

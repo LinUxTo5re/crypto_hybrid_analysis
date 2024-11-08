@@ -1,17 +1,21 @@
 import { createChart } from 'lightweight-charts';
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import LoadingIndicator from '../static/js/LoadingIndicator';
 import * as endpoints from '../constants/endpoints';
 import '../static/css/ResizablePopup.css';
 import LiveIndexPriceTracker from '../static/js/LiveIndexPriceTracker';
-import { HandleDataContext } from './AnalyticFrame';
+import { useHandleData } from '../utils/HandleDataContext';
 
-const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
+const StatisticalAnalysis = ({ previousCryptoData }) => {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null); // Create a ref to store the chart instance
     const [cryptoData, setCryptoData] = useState(null);
     const [liveIndexAndLastPrice, setliveIndexAndLastPrice] = useState(null);
 
+    // Use Context API
+    const { isFabEnabled, handleFabEnabled,
+         changeInISCollection, updateChangeInISCollection 
+        } = useHandleData();
     
     // Create refs for the excluded state variables
     const seriesDataRef = useRef([]);
@@ -366,9 +370,6 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
             }
         }      
     }, [changeInISCollection]);
-
-    //Context API
-    const { isFabEnabled, handleFabEnabled } = useContext(HandleDataContext);
 
     return (
         <>

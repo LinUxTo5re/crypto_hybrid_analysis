@@ -4,7 +4,7 @@ import Draggable from 'react-draggable';
 import React, { useState } from 'react';
 
 // ISCollection -> Indicatores-Strategies collection
-const ISCollection =  ({type, ISchange}) => {
+const ISCollection =  ({type}) => {
     const [size, setSize] = useState({ width: 600, height: 200 }); // Initial size
    
     // Handle resizing
@@ -37,7 +37,7 @@ const ISCollection =  ({type, ISchange}) => {
                         }}
                     >
                        {type === 'I' ?(
-                        <NestedEMACheckboxes ISchange={ISchange}/>
+                        <NestedEMACheckboxes/>
 
                        ):
                        <h1>hello</h1>}

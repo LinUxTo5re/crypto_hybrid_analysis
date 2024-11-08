@@ -12,9 +12,16 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { pink } from '@mui/material/colors';
+import { useHandleData } from '../../utils/HandleDataContext';
 
-const NestedEMACheckboxes = ({ISchange}) => {
+const NestedEMACheckboxes = () => {
+  // Use Context API
+  const { isFabEnabled, handleFabEnabled, 
+    changeInISCollection, updateChangeInISCollection 
+  } = useHandleData();
+
   const [expanded, setExpanded] = useState(false);
+
   const [childExpanded, setChildExpanded] = useState({
     ema5min: false,
     ema15min: false,
@@ -22,7 +29,10 @@ const NestedEMACheckboxes = ({ISchange}) => {
     ema4hour: false,
     ema1day: false,
   });
-  const [checkboxes, setCheckboxes] = useState({
+
+
+  const [checkboxes, setCheckboxes] = useState(changeInISCollection !== null ?
+    changeInISCollection: {
     ema5min: false,
     ema5min_9: false,
     ema5min_12: false,
@@ -76,7 +86,7 @@ const NestedEMACheckboxes = ({ISchange}) => {
           [`${parent}_12`]: isChecked,
           [`${parent}_50`]: isChecked,
       };
-      ISchange(newCheckboxes);
+      updateChangeInISCollection(newCheckboxes);
       return newCheckboxes;
   });
   };
@@ -93,7 +103,7 @@ const NestedEMACheckboxes = ({ISchange}) => {
         const children = [`${parent}_9`, `${parent}_12`, `${parent}_50`];
         const allChildrenChecked = children.every((childKey) => updatedCheckboxes[childKey]);
 
-        ISchange(updatedCheckboxes);
+        updateChangeInISCollection(updatedCheckboxes);
 
         return {
             ...updatedCheckboxes,
@@ -104,12 +114,12 @@ const NestedEMACheckboxes = ({ISchange}) => {
 };
 
 
-  const handleChildExpand = (panel) => {
-    setChildExpanded((prev) => ({
-      ...prev,
-      [panel]: !prev[panel],
-    }));
-  };
+const handleChildExpand = (panel) => {
+  setChildExpanded((prev) => ({
+    ...prev,
+    [panel]: !prev[panel],
+  }));
+};
 
 
   return (
