@@ -106,7 +106,6 @@ function AnalyticFrame({ cryptoValue }) {
                         onChange={handleSwitchChange}
                         inputProps={{ 'aria-label': 'controlled' }}
                         color="secondary"
-                        disabled={!isValued[index]}
                       />
                     }
                     label="custom market: "
@@ -123,7 +122,6 @@ function AnalyticFrame({ cryptoValue }) {
                       renderInput={(params) => (
                         <TextField {...params} label="Markets"
                          required
-                         disabled={!isValued[index]}
                          />
                       )}
                       onChange={(event, value) => {
@@ -138,7 +136,6 @@ function AnalyticFrame({ cryptoValue }) {
                       sx={{ width: 300, margin: '0 10px' }}
                       inputProps={{ maxLength: 6 }}
                       required
-                      disabled={!isValued[index]}
                     />
                   )}
                   

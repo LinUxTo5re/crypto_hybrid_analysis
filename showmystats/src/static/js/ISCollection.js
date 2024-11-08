@@ -3,6 +3,7 @@ import '../../static/css/ResizablePopup.css';
 import Draggable from 'react-draggable';
 import React, { useState } from 'react';
 
+// ISCollection -> Indicatores-Strategies collection
 const ISCollection =  ({type, ISchange}) => {
     const [size, setSize] = useState({ width: 600, height: 200 }); // Initial size
    

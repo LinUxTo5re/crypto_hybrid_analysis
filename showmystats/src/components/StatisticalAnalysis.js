@@ -64,11 +64,13 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
 
     const market = useRef();
     const priceFormatConfig = useRef();
-    const [isLoading, setIsLoading] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const[isFirstBarLoading, setIsFirstBarLoading] = useState(null);
 
     const handleLoader = (val) =>
     {
         setIsLoading(val);
+        setIsFirstBarLoading(val);
         if(val === false) handleFabEnabled(true);
     }
 
@@ -112,7 +114,7 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
         priceFormatConfig.current = previousCryptoData?.priceFormatConfig;
 
         if (!market.current) return;
-        handleLoader(true);
+        setIsFirstBarLoading(true);
         const socket = new WebSocket(endpoints.CCCAGG_LiveTrade_WS + market.current);
 
         socket.addEventListener('open', () => {
@@ -226,7 +228,7 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
             });
         
             console.log('Websocket connected: appending EMA indicators');
-            socket.send(previousEMA);
+            socket.send(JSON.stringify(previousEMA));
         });
 
         socket.addEventListener('message', (event) => {
@@ -276,52 +278,60 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
     const lineSeriesRef = useRef({}); // Store line series references
     const timeframes = ['5m', '15m', '1h', '4h', '1d'];
     const emaPeriods = [9, 12, 50];
+    const lineSeriesData = useRef([]); //keeping bkup
 
     // Update EMA (uses ws://127.0.0.1:8000/ws/appendindicators/)
     useEffect(() => {
-        if (isLoading == null && previousCryptoData.length === 0) return;
+        if (isLoading == null && Object.keys(previousCryptoData).length < 3) return;
         
+
         const addEmaLineSeries = (emaData, timestamp, timeframe, period) => {
-            if (emaData && timestamp) {
-                const mergedData = emaData.map((emaValue, index) => ({
-                    value: emaValue,
-                    time: !isLoading && isLoading !== null ? timestamp : timestamp[index],
-                }));
-    
-                const lineSeriesKey = `${timeframe}_${period}`;
-                
-                // Check if the line series already exists
-                if (!lineSeriesRef.current[lineSeriesKey]) {
-                    // Create a new line series and store its reference
-                    lineSeriesRef.current[lineSeriesKey] = chartRef.current.addLineSeries({
-                        color: colorsEMA[timeframe][period],
-                        lineWidth: 1,
-                        priceScaleId: priceScaleId.current,
-                        priceLineVisible: false,
-                        priceFormat: priceFormatConfig.current,
-                        visible: false, // Initial visibility
-                    });
-                }
-                
-                lineSeriesRef.current[lineSeriesKey].setData(mergedData);
+            if (!emaData || !timestamp) return;
+        
+            const lineSeriesKey = `${timeframe}_${period}`;
+        
+            const newData = isLoading 
+            ? emaData.map((emaValue, index) => ({
+                value: emaValue,
+                time: timestamp[index],
+            })) 
+            : [{ value: emaData, time: timestamp }];
+
+            // Initialize line series if it doesn't exist
+            if (!lineSeriesRef.current[lineSeriesKey]) {
+                lineSeriesRef.current[lineSeriesKey] = chartRef.current.addLineSeries({
+                    color: colorsEMA[timeframe][period],
+                    lineWidth: 1,
+                    priceScaleId: priceScaleId.current,
+                    priceLineVisible: false,
+                    priceFormat: priceFormatConfig.current,
+                    visible: false,
+                });
+        
+                lineSeriesData.current[lineSeriesKey] = [];
             }
+        
+            // Append new data to existing data array and set it to the line series
+            lineSeriesData.current[lineSeriesKey] = [...lineSeriesData.current[lineSeriesKey], ...newData];
+            lineSeriesRef.current[lineSeriesKey].setData(lineSeriesData.current[lineSeriesKey]);
         };
         
+        // Process EMA data for each timeframe and period
         if (market.current && chartRef.current) {
             timeframes.forEach((timeframe) => {
                 emaPeriods.forEach((period) => {
-                    let emaData, timestamp;
-                    if (!isLoading && isLoading !== null) {
-                        emaData = NewEMAdataFetched[timeframe]?.['ema_' + period];
-                        timestamp = NewEMAdataFetched?.timeStamp;
-                    } else {
-                        emaData = previousCryptoData['EMA_' + timeframe]?.['EMA_' + period.toString()];
-                        timestamp = previousCryptoData['EMA_' + timeframe]?.EMA_timeStamp;
-                    }
+                    const emaData = isLoading
+                        ? previousCryptoData[`EMA_${timeframe}`]?.[`EMA_${period}`.toString()]
+                        : NewEMAdataFetched[`EMA_${timeframe}`]?.[`ema_${period}`.toString()];
+                    const timestamp = isLoading
+                        ? previousCryptoData[`EMA_${timeframe}`]?.EMA_timeStamp
+                        : NewEMAdataFetched?.timestamp;
+        
                     addEmaLineSeries(emaData, timestamp, timeframe, period);
                 });
             });
         }
+        
     }, [NewEMAdataFetched, previousCryptoData]);
     
     // handle EMA (hide/show) based on `changeInISCollection`
@@ -375,7 +385,7 @@ const StatisticalAnalysis = ({ previousCryptoData, changeInISCollection }) => {
                 />
                
             </div>
-            {isLoading && (
+            {isFirstBarLoading && (
                 <LoadingIndicator 
                     msg={"Previous crypto data fetched successfully, Waiting for first 5 minute candle to be complete ...."}
                 />

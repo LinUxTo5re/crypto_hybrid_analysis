@@ -100,6 +100,7 @@ const NestedEMACheckboxes = ({ISchange}) => {
             [parent]: allChildrenChecked,
         };
     });
+    console.log(checkboxes)
 };
 
 
