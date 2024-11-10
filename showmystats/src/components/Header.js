@@ -15,6 +15,11 @@ function Header({onCryptoValueChange}) {
             setCryptoValue('1');
             onCryptoValueChange('1');
         }
+        else{
+            setCryptoValue('2');
+            onCryptoValueChange('2');
+        }
+       
     }, [isMultiSelected, onCryptoValueChange]);
 
     const handleRadioChange = (event) => {
@@ -37,7 +42,7 @@ function Header({onCryptoValueChange}) {
         setCryptoValue(value);
         onCryptoValueChange(value);
     };
-
+    
     return (
         <div className='headerImg'>
             <h1 className='headerContainer'>
@@ -56,7 +61,10 @@ function Header({onCryptoValueChange}) {
                         value="single"
                     />
                     <FormControlLabel
-                        control={<Radio />}
+                        control=
+                        {<Radio 
+                            disabled
+                            />}
                         label="multi"
                         labelPlacement="start"
                         value="multi"

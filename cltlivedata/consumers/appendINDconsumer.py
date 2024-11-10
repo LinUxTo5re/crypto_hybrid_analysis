@@ -124,7 +124,7 @@ class AppendIndicatorsValuesConsumer(AsyncWebsocketConsumer):
                                     new_ema = await calculate_ema(previous_ema=last_ema_data, new_price=weighted_close_price, ema_period=ema_period)
                                     ema_data[str(ema_period)] = new_ema
                                         
-                                self.indicator_return_dict[tf] = {
+                                self.indicator_return_dict['EMA_'+tf] = {
                                     'ema_9': ema_data.get('9'),
                                     'ema_12': ema_data.get('12'),
                                     'ema_50': ema_data.get('50')

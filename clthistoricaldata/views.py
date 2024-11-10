@@ -9,6 +9,8 @@ from clthistoricaldata.static.constants import quote_currency, indicators_tf
 from clthistoricaldata.logical.mlhistdata import designMLmodel
 from clthistoricaldata.logical.shortIndicators import designIndicator
 import logging
+import json
+from clthistoricaldata.helpers.apiUtils import fetchDataForPriceFormat
 
 # Get an instance of a logger for the 'clthistoricaldata' app
 logger = logging.getLogger('clthistoricaldata')
@@ -32,13 +34,13 @@ async def fetch_historical_data(request):
         designIndicators = designIndicator(data, timeframe)
         ohlcv_data = await designIndicators.Indicators_Indication()
         
-    # data = {"message" : "hello buddy"} # sample, remove later
+    ohlcv_data = ohlcv_data.fillna(value=0)
     json_data = ohlcv_data.to_dict(orient='records')
+
     if not json_data:
         json_data = {"message" : "No data avaialbe, something went wrong."}
         logger.warning("NO DATA AVAILABLE, DEBUG AND CHECK CODE")
     return JsonResponse(json_data, safe=False)
-
 
 @api_view(['GET'])
 def index(request):
@@ -49,6 +51,19 @@ def index(request):
         "random_list": [random.randint(1, 100) for _ in range(5)]
     }
     return Response(random_data)
+
+@api_view(['POST'])
+def submit_data(request):
+    if request.method == 'POST':
+        print("ReactJS called success....")
+        return JsonResponse({'message': 'Data received successfully!'}, status=200)
+    else:
+        return JsonResponse({'message': "error" }, status = 404) 
+
+@api_view(['GET'])
+def fetch_precision(request):
+    market = request.GET.get('market', 'BTC')
+    return JsonResponse({"price": fetchDataForPriceFormat(market.upper())}, safe=False)
 
 """
 note: instead of calling one endpoint for all timeframe indicator creation,

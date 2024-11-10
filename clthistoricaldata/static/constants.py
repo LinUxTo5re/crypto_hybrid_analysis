@@ -18,3 +18,9 @@ url_mapping = {
     'h': OHLCV_hour_api,
     'd': OHLCV_daily_api
 }
+
+# Gate IO
+Gate_host = "https://api.gateio.ws"
+Gate_prefix = "/api/v4"
+Gate_headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+Gate_Contract_url = Gate_host + Gate_prefix + '/futures/usdt/contracts/'

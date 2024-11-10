@@ -12,6 +12,8 @@ import asyncio
 logger = logging.getLogger('cltlivedata')
 
 # class fetch live CCCAGG data 
+# This consumer will create bar graph with more traded area of 5 minutes
+
 class LiveDataIndexConsumer(AsyncWebsocketConsumer):
 
     # establish websocket connection
@@ -65,6 +67,9 @@ class LiveDataIndexConsumer(AsyncWebsocketConsumer):
                                             # 5-min candle data fetched
                                             candle_volume_regions = await filterLiveData_helper.process_trade_data(
                                                 trade_data=trade_data)
+                                            
+                                            
+                                            candle_volume_regions.append({"extra_data": {'time_stamp': next_5_min_timestamp}})
                                             await self.send(text_data=json.dumps({"crypto_data": candle_volume_regions}))
                                             
                                             await self.channel_layer.group_send(

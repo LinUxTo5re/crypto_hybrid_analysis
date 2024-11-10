@@ -1,0 +1,17 @@
+.resizable-popup {
+    position: relative;
+    overflow: hidden;
+    scrollbar-color: black rgba(255, 255, 255, 0.5);
+    scrollbar-width: 'auto';
+}
+
+/* Resize handle */
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background-color: #007bff;
+}

@@ -44,6 +44,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Allowing api call from react app
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 ROOT_URLCONF = 'analyzedcrypto.urls'
 
 TEMPLATES = [
@@ -65,13 +70,20 @@ TEMPLATES = [
 # WSGI_APPLICATION = 'analyzedcrypto.wsgi.application'
 ASGI_APPLICATION = 'analyzedcrypto.asgi.application'
 
-# Channel Layer
+# Channel Layer - Linux (dev/deployable)
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('localhost', 6379)],
+#         },
+#     },
+# }
+
+# Channel Layer - Windows (development purpose only)
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('localhost', 6379)],
-        },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
 
