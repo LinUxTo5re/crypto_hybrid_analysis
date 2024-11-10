@@ -135,7 +135,8 @@ const handleChildExpand = (panel) => {
           zIndex: 1000,
         }}
       >
-        <Tooltip title="weighted_close_price = (data['high'] + data['low'] + 2 * data['close']) / 4" arrow>
+        <Tooltip title="weighted_volume_price = (weights['hightW'] + weights['lowW'] +
+                                                weights['closeW'] + weights['openW']) / volumeW" arrow>
           <Typography variant="h6" style={labelStyle}>
             EMA(price + volume)
           </Typography>
