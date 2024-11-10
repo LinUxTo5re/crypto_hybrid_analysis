@@ -19,9 +19,9 @@ class designIndicator:
 
     # create EMA for 9/12/50 period
     async def EMA_Indication(self):
-        self.ohlcv_data['EMA_9'] = talib.EMA(self.ohlcv_data['weighted_close'], timeperiod=9)
-        self.ohlcv_data['EMA_12'] = talib.EMA(self.ohlcv_data['weighted_close'], timeperiod=12)
-        self.ohlcv_data['EMA_50'] = talib.EMA(self.ohlcv_data['weighted_close'], timeperiod=50)
+        self.ohlcv_data['EMA_9'] = talib.EMA(self.ohlcv_data['weighted_volume_price'], timeperiod=9)
+        self.ohlcv_data['EMA_12'] = talib.EMA(self.ohlcv_data['weighted_volume_price'], timeperiod=12)
+        self.ohlcv_data['EMA_50'] = talib.EMA(self.ohlcv_data['weighted_volume_price'], timeperiod=50)
     
     # return volume for 5 minute timeframe
     async def VOL_Indication(self):

@@ -137,7 +137,7 @@ const handleChildExpand = (panel) => {
       >
         <Tooltip title="weighted_close_price = (data['high'] + data['low'] + 2 * data['close']) / 4" arrow>
           <Typography variant="h6" style={labelStyle}>
-            EMA
+            EMA(price + volume)
           </Typography>
         </Tooltip>
         {expanded ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
